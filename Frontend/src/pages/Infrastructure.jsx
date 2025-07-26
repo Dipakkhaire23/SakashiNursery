@@ -37,7 +37,7 @@ const Infrastructure = () => {
      <div className="w-screen h-[500px] overflow-hidden flex justify-center items-center bg-black">
   <video
     className="w-screen h-auto object-cover transition-all duration-300 ease-in-out rounded-none rotate-[360deg]"
-    src="/videos/infrastructure.mp4"
+    src="public/videos/infrastructure.mp4"
     autoPlay
     loop
     muted

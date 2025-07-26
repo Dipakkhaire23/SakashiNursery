@@ -2,6 +2,10 @@ import{ useState, useEffect } from 'react';
 // import { Toaster, toast } from 'react-hot-toast';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import chilli  from "../images/chilli.jpg"
+import aryman  from "../images/aryaman.jpg"
+import veer  from "../images/Slidebar_4.jpg"
+import watermeloan  from "../images/watermeloan.jpg"
 
 const products = [
   {
@@ -24,7 +28,7 @@ const products = [
 
 शेतकरी मित्रांनो, जर तुम्हाला कमी वेळात चांगला उत्पादन व बाजारभाव हवा असेल, तर कॅबेज वीर-333 हे उत्तम निवड आहे! 🌱💚`,
   wiki: 'https://en.wikipedia.org/wiki/Cabbage',
-  image: '/src/images/Slidebar_4.jpg',
+  image: veer,
 },
 
 {
@@ -42,7 +46,7 @@ const products = [
 - पीक कालावधी: 70-80 दिवसांत कापणीस योग्य
 `,
   wiki: 'https://en.wikipedia.org/wiki/chilli',
-  image: '/src/images/chilli.jpg',
+  image: chilli,
 }
 ,
   {
@@ -70,7 +74,7 @@ const products = [
 लागवडीचा योग्य कालावधी:
 जानेवारी ते मार्च आणि जून ते जुलै हे महिने लागवडीसाठी सर्वोत्तम आहेत.`,
     wiki: 'https://en.wikipedia.org/wiki/Watermelon',
-    image: '/src/images/watermeloan.jpg',
+    image: watermeloan,
   },
   {
     id: 4,
@@ -99,7 +103,7 @@ const products = [
 लागवडीचा योग्य कालावधी:
 जुलै ते नोव्हेंबर व डिसेंबर ते फेब्रुवारी या कालावधीत लागवड करणे अधिक फायदेशीर.`,
     wiki: 'https://en.wikipedia.org/wiki/Tomato',
-    image: `/src/images/aryaman.jpg`,
+    image:aryman,
   },
 ];
 
