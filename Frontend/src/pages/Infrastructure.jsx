@@ -1,5 +1,5 @@
 
-import infrastructureVideo from "../images/infrastructure.MP4";
+import infrastructureVideo from "../images/infrastructure.mp4";
 import Seeding1 from "../images/seeding1.jpg";
 import Seeding2 from "../images/seeding2.jpg";
 import Seeding3 from "../images/seeding3.jpg";
