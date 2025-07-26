@@ -1,5 +1,5 @@
 
-import infrastructureVideo from "../images/infrastructure.mp4";
+
 import Seeding1 from "../images/seeding1.jpg";
 import Seeding2 from "../images/seeding2.jpg";
 import Seeding3 from "../images/seeding3.jpg";
@@ -37,7 +37,7 @@ const Infrastructure = () => {
      <div className="w-screen h-[500px] overflow-hidden flex justify-center items-center bg-black">
   <video
     className="w-screen h-auto object-cover transition-all duration-300 ease-in-out rounded-none rotate-[360deg]"
-    src={infrastructureVideo}
+    src="/videos/infrastructure.mp4"
     autoPlay
     loop
     muted
