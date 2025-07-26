@@ -1,10 +1,10 @@
-import React from 'react';
-import SeedSelection from '../../images/seeding2.JPG';
-import TrayPreparation from '../../images/seeding4.JPG';
-import Sowing from '../../images/seeding1.JPG';
-import Watering from '../../images/watering.JPG';
-import SoilCheck from '../../images/soilCheck.JPG';
-import Monitoring from '../../images/monitoring.JPG';
+// import React from 'react';
+import SeedSelection from '../../images/seeding2.jpg';
+import TrayPreparation from '../../images/seeding4.jpg';
+import Sowing from '../../images/seeding1.jpg';
+import Watering from '../../images/watering.jpg';
+import SoilCheck from '../../images/soilCheck.jpg';
+import Monitoring from '../../images/monitoring.jpg';
 
 
 

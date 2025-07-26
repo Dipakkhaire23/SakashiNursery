@@ -1,10 +1,10 @@
 import React from 'react';
 // import PlantSelection from '../images/booking.jpg';
-import PlantSelection from '../../images/booking.JPG';
-import PlantReservation from '../../images/booking3.JPG';
-import PlantConfirmation from '../../images/booking5.JPG';
-import ProgressUpdate from '../../images/booking1.JPG';
-import Confirming from '../../images/booking4.JPG';
+import PlantSelection from '../../images/booking.jpg';
+import PlantReservation from '../../images/booking3.jpg';
+import PlantConfirmation from '../../images/booking5.jpg';
+import ProgressUpdate from '../../images/booking1.jpg';
+import Confirming from '../../images/booking4.jpg';
 
 
 

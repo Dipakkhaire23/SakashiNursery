@@ -311,6 +311,12 @@ const App = () => {
         <Route path="/infrastructure" element={<Infrastructure />} />
         <Route path="/team" element={<Team />} />
         <Route path="/phases" element={<Phases />} />
+        {/* Phases */}
+          <Route path="/phases/booking" element={<BookingPhase />} />
+          <Route path="/phases/sowing" element={<SowingPhase />} />
+          <Route path="/phases/preparing" element={<PlantPreparation />} />
+          <Route path="/phases/visit" element={<CustomerVisitPhase />} />
+          <Route path="/phases/delivered" element={<PlantDelivery />} />
         <Route path="/vegetable/cauliflower" element={<Cauliflower />} />
         <Route path="/vegetable/papaya" element={<Papaya />} />
         <Route path="/vegetable/brinjal" element={<Brinjal />} />

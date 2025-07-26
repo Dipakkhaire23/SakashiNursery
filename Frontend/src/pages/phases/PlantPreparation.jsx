@@ -1,8 +1,8 @@
 import React from 'react';
-import HealthInspection from '../../images/inspection.JPG';
-import PotTransfer from '../../images/PotTransfer.JPG';
-import NutrientPreparation from '../../images/NutrientPreparation.JPG';
-import RegularWatering from '../../images/RegularWatering.JPG';
+import HealthInspection from '../../images/inspection.jpg';
+import PotTransfer from '../../images/PotTransfer.jpg';
+import NutrientPreparation from '../../images/NutrientPreparation.jpg';
+import RegularWatering from '../../images/RegularWatering.jpg';
 
 const preparingSteps = [
   {
