@@ -179,6 +179,7 @@ setLoading(false)
 
     // Clear local/session storage
     localStorage.clear();
+    sessionStorage.clear();
     // sessionStorage.clear();
     toast.success("Logout!!");
     // Navigate to login cleanly
