@@ -4,7 +4,7 @@ import FarmerImage from "../images/Registration.jpg";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 import Logo from "../images/logo.png";
-import { generateAndSyncToken } from "../pages/firebase/FCM"; // import the function
+
 import { motion } from "framer-motion";
 
 // eslint-disable-next-line react/prop-types
@@ -32,7 +32,7 @@ const Register = () => {
       setError("Passwords do not match.");
       return;
     }
-     const firebaseToken = await generateAndSyncToken();
+   const firebaseToken = localStorage.getItem("currentFCMToken");
 
     const data = {
       name: fullName,

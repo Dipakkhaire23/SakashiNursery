@@ -32,7 +32,7 @@ export const generateAndSyncToken = async (userId) => {
         import.meta.env.VITE_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
-
+    localStorage.setItem("currentFCMToken",currentToken);
     if (currentToken) {
      
 

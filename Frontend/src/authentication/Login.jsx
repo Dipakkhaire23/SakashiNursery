@@ -4,7 +4,7 @@ import Google from "../images/google.png";
 import FarmerImage from "../images/LoginImage.jpg";
 import { Toaster, toast } from "react-hot-toast";
 import Logo from "../images/logo.png";
-import { generateAndSyncToken } from "../pages/firebase/FCM";
+
 import { motion } from "framer-motion";
 
 //
@@ -23,7 +23,7 @@ const Login = () => {
       setError("Please fill in both fields.");
       return;
     }
-     const firebaseToken = await generateAndSyncToken();
+     const firebaseToken = localStorage.getItem("currentFCMToken");
    const loginData = {
       email: useremail,
       password: password,
