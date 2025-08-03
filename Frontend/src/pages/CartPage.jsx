@@ -168,7 +168,7 @@ const handlePayment = async () => {
 }
 
     const options = {
-      key: "rzp_test_oEJUee2SIoQsVi", // ✅ Live Razorpay key    rzp_live_MHCWVpI4r7gNl1
+      key: "rzp_live_MHCWVpI4r7gNl1", // ✅ Live Razorpay key    rzp_live_MHCWVpI4r7gNl1
       amount: order.amount,
       currency: order.currency,
       name: "Sakshi Nursery",
