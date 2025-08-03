@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
+// import Navbar from "../components/Navbar";
 
 const OAuthSuccessPage = () => {
   const location = useLocation();
@@ -13,7 +13,7 @@ const OAuthSuccessPage = () => {
     if (token) {
       // Save the token (you can also store in cookies or use a context)
       localStorage.setItem("token", token);
-      window.location.reload();
+      // window.location.reload();
        
       
       
