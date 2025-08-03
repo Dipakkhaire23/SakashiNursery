@@ -13,7 +13,7 @@ const OAuthSuccessPage = () => {
     if (token) {
       // Save the token (you can also store in cookies or use a context)
       localStorage.setItem("token", token);
-      window.location.reload();
+      
        
       
       
@@ -21,6 +21,7 @@ const OAuthSuccessPage = () => {
       // Redirect to saved path or default to "/products"
       const redirectPath = localStorage.getItem("redirectAfterLogin") || "/products";
       navigate(redirectPath, { replace: true });
+      window.location.reload();
        
       
     } else {
