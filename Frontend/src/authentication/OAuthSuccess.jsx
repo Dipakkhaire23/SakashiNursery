@@ -13,7 +13,7 @@ const OAuthSuccessPage = () => {
     if (token) {
       // Save the token (you can also store in cookies or use a context)
       localStorage.setItem("token", token);
-      // window.location.reload();
+      window.location.reload();
        
       
       
