@@ -13,6 +13,8 @@ import Login from "./authentication/Login";
 import Register from "./authentication/Registration";
 import ForgotPassword from "./authentication/ForgotPassword";
 import ResetPassword from "./authentication/Passwwordresset";
+import OAuthSuccess from "./authentication/OAuthSuccess"
+
 
 // Admin Components
 import Sidebar from "./adminComponents/Sidebar";
@@ -31,8 +33,10 @@ import Footer from "./pages/Footer";
 import Home from "./pages/Home";
 import ProductCard from "./components/ProductCard";
 import Customer from "./components/Customer";
+import Award from "./components/AwardCard";
 import UniqueFeature from "./components/UniqueFeature";
 import WhatsAppChat from "./components/WhatsAppChat";
+import Congratulations from "./pages/congratulations";
 
 // Vegetable Pages
 import Cauliflower from "./pages/vegetables/Cauliflower";
@@ -66,11 +70,14 @@ import PlantDelivery from "./pages/phases/PlantDelivery";
 import Profile from "./pages/Profile";
 import CartPage from "./pages/CartPage";
 import MyOrders from "./pages/Myorders";
+import ProductPage from './pages/Productpage';
+import ScrollToTop from './pages/ScrollToTop';
 
 const App = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
+  const [cartItemCoun, setCartItemCoun] = useState(0);
 
   const [loadingAuth, setLoadingAuth] = useState(true); // 🟡 Add this
   const userId = localStorage.getItem("userId"); // Or get from auth state
@@ -179,13 +186,44 @@ const App = () => {
     //   }
   }, []);
 
+  
+  //  useEffect(() => {
+  //   // Disable right-click
+  //   const handleContextMenu = (e) => {
+  //     e.preventDefault();
+  //   };
+
+  //   // Disable F12, Ctrl+Shift+I, Ctrl+U, etc.
+  //   const handleKeyDown = (e) => {
+  //     if (
+  //       e.key === "F12" ||
+  //       (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C")) ||
+  //       (e.ctrlKey && e.key === "U")
+  //     ) {
+  //       e.preventDefault();
+  //     }
+  //   };
+
+  //   document.addEventListener("contextmenu", handleContextMenu);
+  //   document.addEventListener("keydown", handleKeyDown);
+
+  //   return () => {
+  //     document.removeEventListener("contextmenu", handleContextMenu);
+  //     document.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, []);
+
   const HomeLayout = () => (
     <>
       <Home />
       <ProductCard />
+       <Award/>
       <Customer />
       <UniqueFeature />
+      <ContactUs/>
+      
       <WhatsAppChat />
+     
     </>
   );
   if (loadingAuth) {
@@ -205,6 +243,7 @@ const App = () => {
 
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+         
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </AnimatePresence>
@@ -221,20 +260,22 @@ const App = () => {
 
   if (authenticated && userRole === "ADMIN") {
     return (
+      
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar sidebarCollapsed={sidebarCollapsed} />
         {!sidebarCollapsed && (
           <div
-            className="fixed inset-0 bg-black opacity-30 z-30 lg:hidden"
+            className="fixed inset-0 z-30 bg-black opacity-30 lg:hidden"
             onClick={() => setSidebarCollapsed(true)}
           />
         )}
-        <div className="flex-1 lg:ml-64 transition-all duration-300">
+        <div className="flex-1 transition-all duration-300 lg:ml-64">
           <Header
             sidebarCollapsed={sidebarCollapsed}
             setSidebarCollapsed={setSidebarCollapsed}
           />
           <main className="p-6">
+            <ScrollToTop />
             <Routes>
               <Route path="/admin" element={<Dashboard />} />
               <Route path="/admin/products" element={<ProductManagement />} />
@@ -266,17 +307,21 @@ const App = () => {
   if (authenticated && userRole === "CUSTOMER") {
     return (
       <>
-        <Navbar />
+        <Navbar  cartItemCoun={cartItemCoun}/>
+        <ScrollToTop />
         <Routes>
-          <Route path="/" element={<HomeLayout />} />
+         
+           <Route path="/products" element={<ProductPage />} />
           <Route path="/about-us" element={<AboutUs />} />
+           <Route path="/home" element={<HomeLayout />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/infrastructure" element={<Infrastructure />} />
           <Route path="/team" element={<Team />} />
           <Route path="/phases" element={<Phases />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/cart" element={<CartPage />} />
+          <Route path="/cart" element={<CartPage  />} />
           <Route path="/my-orders" element={<MyOrders />} />
+          <Route path="/congratulations" element={<Congratulations />} />
 
           {/* Veg */}
           <Route path="/vegetable/cauliflower" element={<Cauliflower />} />
@@ -286,7 +331,7 @@ const App = () => {
           <Route path="/vegetable/cabbage" element={<Cabbage />} />
           <Route path="/vegetable/bottle-gourd" element={<BottleGourd />} />
           <Route path="/vegetable/bitter-gourd" element={<BitterGourd />} />
-          <Route path="/vegetable/tomato" element={<Tomato />} />
+          <Route path="/vegetable/tomato" element={<Tomato setCartItemCoun={setCartItemCoun}/>} />
           <Route path="/vegetable/chilli" element={<Chilli />} />
           <Route path="/vegetable/capsicum" element={<Capsicum />} />
           <Route path="/vegetable/watermelon" element={<Watermelon />} />
@@ -302,7 +347,7 @@ const App = () => {
           <Route path="/phases/preparing" element={<PlantPreparation />} />
           <Route path="/phases/visit" element={<CustomerVisitPhase />} />
           <Route path="/phases/delivered" element={<PlantDelivery />} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/products" />} />
         </Routes>
         <Footer />
       </>
@@ -311,8 +356,10 @@ const App = () => {
 
   // Default public view
   return (
-    <>
+   
+      <>
       <Navbar />
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomeLayout />} />
         <Route path="/about-us" element={<AboutUs />} />
@@ -320,8 +367,10 @@ const App = () => {
         <Route path="/infrastructure" element={<Infrastructure />} />
         <Route path="/team" element={<Team />} />
         <Route path="/phases" element={<Phases />} />
+         <Route path="/oauth-success" element={<OAuthSuccess />} />
         {/* Phases */}
           <Route path="/phases/booking" element={<BookingPhase />} />
+          {/* <Route path="/products" element={<ProductPage />} /> */}
           <Route path="/phases/sowing" element={<SowingPhase />} />
           <Route path="/phases/preparing" element={<PlantPreparation />} />
           <Route path="/phases/visit" element={<CustomerVisitPhase />} />
@@ -346,6 +395,10 @@ const App = () => {
       </Routes>
       <Footer />
     </>
+  
+
+    
+    
   );
 };
 

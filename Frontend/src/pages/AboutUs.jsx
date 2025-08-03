@@ -1,7 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import ownerImg from "../images/owner.jpg";
+import { useEffect, useRef } from "react";
+import ownerImg from "../images/aboutusimage.jpg";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Team from "./Team";
+import dipak  from "../images/dipak.jpg"
+import atharv  from "../images/atharv.jpg"
+import ashwini  from "../images/ashwini.jpg"
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,6 +21,7 @@ const AboutUs = () => {
   };
 
   useEffect(() => {
+     window.scrollTo(0, 0);
     // Tagline animation
     gsap.fromTo(
       taglineRef.current,
@@ -46,13 +51,13 @@ const AboutUs = () => {
   }, []);
 
   return (
-    <div className="bg-green-50 min-h-screen py-10 px-6 md:px-20 font-sans">
+    <div className="min-h-screen px-6 py-10 font-sans bg-green-50 md:px-20">
       {/* Header */}
       <div className="max-w-5xl mx-auto text-center">
-        <h1 className="text-4xl font-extrabold text-green-900 mb-4">
+        <h1 className="mb-4 text-4xl font-extrabold text-green-900">
           Welcome to <span className="font-serif">Sakshi Hi-Tech</span> Nursery
         </h1>
-        <p ref={taglineRef} className="text-gray-700 text-lg mb-8">
+        <p ref={taglineRef} className="mb-8 text-lg text-gray-700">
           Carefully Grown. Beautifully Delivered.
         </p>
       </div>
@@ -60,22 +65,23 @@ const AboutUs = () => {
       {/* Founder Section */}
       <section className="max-w-5xl mx-auto my-12 text-center">
         <img
-          src={ownerImg}
-          alt="Founder Mr. Vijay Trambakrao Khaire"
-          className="w-100 h-95 mx-auto object-cover rounded-xl shadow-lg"
-          loading="lazy"
-        />
+  src={ownerImg}
+  alt="Founder Mr. Vijay Trambakrao Khaire"
+  className="object-cover mx-auto shadow-lg object-top-left w-100 h-95 rounded-xl"
+  loading="lazy"
+/>
+
         <h2 className="mt-4 text-xl font-bold text-green-900">Prop. Vijay Trambakrao Khaire</h2>
-        <p className="text-green-700 font-medium">Founder</p>
+        <p className="font-medium text-green-700">Founder</p>
       </section>
 
       {/* Sakshi Section */}
-      <section className="max-w-7xl mx-auto my-10 px-6 text-center md:text-left md:flex md:items-start gap-10">
+      <section className="gap-10 px-6 mx-auto my-10 text-center max-w-7xl md:text-left md:flex md:items-start">
         <div className="mt-8 md:mt-0">
-          <h2 className="text-2xl font-bold text-green-900 mb-4">
+          <h2 className="mb-4 text-2xl font-bold text-green-900">
             Sakshi Hi-Tech Nursery, Nashik
           </h2>
-          <p className="text-gray-700 text-justify leading-relaxed">
+          <p className="leading-relaxed text-justify text-gray-700">
           Welcome to <strong>Sakshi Hi-tech Nursery</strong>, a place where nature meets care and quality.
           Our journey began on <strong>April 4, 2020</strong>, with a dream to bring the beauty of plants.
           Founded by <strong>Prop. Vijay Trambakrao Khaire</strong>, our nursery started as a small effort to provide
@@ -102,10 +108,10 @@ const AboutUs = () => {
       </section>
 
       {/* Core Values Section */}
-      <section className="bg-green-50 py-16 px-6 md:px-20">
-        <div className="max-w-8xl mx-auto text-center">
-          <h2 className="text-3xl font-extrabold text-green-900 mb-12">Our Core Values</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+      <section className="px-6 py-16 bg-green-50 md:px-20">
+        <div className="mx-auto text-center max-w-8xl">
+          <h2 className="mb-12 text-3xl font-extrabold text-green-900">Our Core Values</h2>
+          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-3">
             {[
               {
                 title: "Quality First",
@@ -147,23 +153,57 @@ const AboutUs = () => {
               <div
                 key={idx}
                 ref={addToRefs}
-                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition overflow-hidden"
+                className="overflow-hidden transition bg-white shadow-md rounded-2xl hover:shadow-lg"
               >
                 <img
                   src={value.image}
                   alt={value.title}
-                  className="h-40 w-full object-cover"
+                  className="object-cover w-full h-40"
                   loading="lazy"
                 />
                 <div className="p-6">
-                  <h4 className="text-green-800 font-bold text-lg mb-2">{value.title}</h4>
-                  <p className="text-gray-600 text-sm">{value.description}</p>
+                  <h4 className="mb-2 text-lg font-bold text-green-800">{value.title}</h4>
+                  <p className="text-sm text-gray-600">{value.description}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </section>
+      <Team/>
+      <h2 className="flex justify-center font-bold"> Devloped By</h2>
+    <div className="flex justify-center gap-16 px-4 py-2 overflow-x-auto whitespace-nowrap scroll-marquee">
+  {/* Member 1 */}
+  <div className="flex items-center space-x-4 min-w-max">
+    <img
+      src={dipak}
+      alt="Dipak Khaire"
+      className="object-cover w-12 h-12 rounded-full"
+    />
+    <p className="text-sm font-semibold text-black">Dipak Khaire</p>
+  </div>
+
+  {/* Member 2 */}
+  <div className="flex items-center space-x-4 min-w-max">
+    <img
+      src={ashwini}
+      alt="Ashwini Salunke"
+      className="object-cover w-12 h-12 rounded-full"
+    />
+    <p className="text-sm font-semibold text-black">Ashwini Salunke</p>
+  </div>
+
+  {/* Member 3 */}
+  <div className="flex items-center space-x-4 min-w-max">
+    <img
+      src={atharv}
+      alt="Atharv Kamerkar"
+      className="object-cover w-12 h-12 rounded-full"
+    />
+    <p className="text-sm font-semibold text-black">Atharv Kamerkar</p>
+  </div>
+</div>
+
     </div>
   );
 };

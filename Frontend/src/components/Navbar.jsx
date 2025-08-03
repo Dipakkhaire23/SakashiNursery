@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { ShoppingCart, Menu, X, User } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate ,NavLink} from "react-router-dom";
 import Logo from "../images/logo.png";
 import axios from "axios";
 // import Cookies from "js-cookie";
 
-const Navbar = () => {
+const Navbar = ({ cartItemCoun }) => {
   const navigate = useNavigate();
   //   const token = localStorage.getItem("token"); // ✅ Get token from cookie
   //  const role = localStorage.getItem("role");
@@ -13,13 +13,14 @@ const Navbar = () => {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const [cartItemCount, setCartItemCount] = useState(0);
+  let [cartItemCount, setCartItemCount] = useState(0);
   const [showPages, setShowPages] = useState(false);
   const [showShopDropdown, setShowShopDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileShowPages, setMobileShowPages] = useState(false);
+  // const [mobileShowPages, setMobileShowPages] = useState(false);
   const [mobileShowShop, setMobileShowShop] = useState(false);
   const token = localStorage.getItem("token");
+ 
 
   useEffect(() => {
     if (token) {
@@ -32,6 +33,7 @@ const Navbar = () => {
     }
   }, []);
 
+ // 🔄 Fetch cart count from backend when authenticated
   useEffect(() => {
     const fetchCartItemCount = async () => {
       if (!isAuthenticated) return;
@@ -41,23 +43,26 @@ const Navbar = () => {
           {
             method: "GET",
             credentials: "include",
-            // headers: {
-            //   Authorization: `Bearer ${token}`,
-            // },
           }
         );
 
-        // if (!res.ok) throw new Error("Failed to fetch cart count");
-        const count = await res.json();
-        setCartItemCount(count);
+        const countData = await res.json();
+        setCartItemCount(countData || 0); // assuming backend returns { count: X }
       } catch (err) {
         console.error("Cart count error:", err);
         setCartItemCount(0);
       }
     };
 
-    if (isAuthenticated) fetchCartItemCount();
+    fetchCartItemCount();
   }, [isAuthenticated]);
+
+  // 🆕 Update from props when passed (on add to cart)
+  useEffect(() => {
+    if (cartItemCoun !== undefined) {
+      setCartItemCount(cartItemCoun);
+    }
+  }, [cartItemCoun]);
 
   const vegetableList = [
     "Cauliflower",
@@ -80,34 +85,88 @@ const Navbar = () => {
 
   const handleMobileLinkClick = () => {
     setMobileMenuOpen(false);
-    setMobileShowPages(false);
+    // setMobileShowPages(false);
     setMobileShowShop(false);
   };
 
   return (
-    <nav className="sticky top-0 bg-green-700 text-white px-4 md:px-6 py-4 z-50 shadow-md">
-      <div className="flex items-center justify-between md:justify-start">
+    <nav className="sticky top-0 z-50 px-4 py-4 text-white bg-green-800 shadow-md md:px-6">
+      <div className="flex items-center justify-between w-full">
         {/* Logo */}
-        <div className="mr-4">
-          <img src={Logo} alt="Logo" className="h-10 w-auto" />
+        <div className="mr-7">
+          <img src={Logo} alt="Logo" className="w-30 h-14" />
         </div>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex flex-1 justify-center items-center gap-8 text-base font-medium">
-          <Link to="/" className="hover:text-yellow-300">
-            Home
-          </Link>
+      <div className="flex items-center space-x-6">
+          {/* Desktop Navigation */}
+        <div className="items-center justify-center flex-1 hidden gap-5 text-base font-medium md:flex">
+         
+
+{isAuthenticated ? (
+  <>
+    <NavLink
+      to="/products"
+      className={({ isActive }) =>
+        isActive
+          ? 'text-yellow-300 font-semibold'
+          : 'hover:text-yellow-300'
+      }
+    >
+      Products
+    </NavLink>
+    {/* Add more authenticated links here */}
+  </>
+) : (
+   <>
+      <NavLink
+        to="/home"
+        className={({ isActive }) =>
+          isActive
+            ? 'text-yellow-300 font-semibold'
+            : 'hover:text-yellow-300'
+        }
+      >
+        Home
+      </NavLink>
+
+      <NavLink
+        to="/infrastructure"
+        onClick={() => setShowPages(false)}
+        className={({ isActive }) =>
+          isActive
+            ? 'text-green-600 font-semibold'
+            : 'block px-4 py-2 hover:text-green-600'
+        }
+      >
+        Infrastructure
+      </NavLink>
+
+      <NavLink
+        to="/about-us"
+        className={({ isActive }) =>
+          isActive
+            ? 'text-yellow-300 font-semibold'
+            : 'hover:text-yellow-300'
+        }
+      >
+        About Us
+      </NavLink>
+    </>
+)}
+
+
+          
 
           <div className="relative">
             <button
               onClick={() => setShowShopDropdown(!showShopDropdown)}
-              className="w-full text-left hover:text-yellow-200 font-semibold flex justify-between items-center blink"
+              className="flex items-center justify-between w-full font-semibold text-left hover:text-yellow-200 blink"
             >
               Book Now ▾
             </button>
             {showShopDropdown && (
               <div
-                className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 bg-white text-black rounded-xl shadow-2xl border z-10 w-64"
+                className="absolute z-10 w-64 mt-2 text-black transform -translate-x-1/2 bg-white border shadow-2xl left-1/2 top-full rounded-xl"
                 onMouseLeave={() => setShowShopDropdown(false)} // 🔑 This line closes dropdown when mouse leaves
               >
                 <div className="grid grid-cols-2 gap-3 px-4 py-3">
@@ -126,7 +185,7 @@ const Navbar = () => {
                         }
                         setShowShopDropdown(false);
                       }}
-                      className="text-left font-semibold hover:text-green-700"
+                      className="font-semibold text-left hover:text-green-700"
                     >
                       {veg}
                     </button>
@@ -135,8 +194,9 @@ const Navbar = () => {
               </div>
             )}
           </div>
+          
 
-          <Link to="/team" className="hover:text-yellow-300">
+          {/* <Link to="/team" className="hover:text-yellow-300">
             Team
           </Link>
           <Link to="/about-us" className="hover:text-yellow-300">
@@ -147,109 +207,177 @@ const Navbar = () => {
           </Link>
           <Link to="/phases" className="hover:text-yellow-300">
             Phases
-          </Link>
+          </Link> */}
+     <div className="flex items-center justify-start space-x-6">
+  {/* Show My Orders only when authenticated */}
+  {isAuthenticated && (
+   <>
+  <NavLink
+  to="/my-orders"
+  className={({ isActive }) =>
+    isActive ? 'text-yellow-300 font-semibold' : 'hover:text-yellow-300'
+  }
+>
+  My Orders
+</NavLink>
 
-          {isAuthenticated ? (
-            <div className="relative">
-              <button
-                onClick={() => setShowPages(!showPages)}
-                className="hover:text-yellow-300"
-              >
-                Pages ▾
-              </button>
+{/* <NavLink
+  to="/products"
+  className={({ isActive }) =>
+    isActive ? 'text-yellow-300 font-semibold' : 'hover:text-yellow-300'
+  }
+>
+  Products
+</NavLink> */}
+   </>
+  )}
 
-              {showPages && (
-                <div
-                  className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 bg-white text-black rounded-xl shadow-2xl z-10 w-56"
-                  onMouseLeave={() => setShowPages(false)} // 🔑 Auto-close when mouse leaves
-                >
-                  <Link
-                    to="/infrastructure"
-                    onClick={() => setShowPages(false)}
-                    className="block px-4 py-2 hover:text-green-600"
-                  >
-                    Infrastructure
-                  </Link>
-                  <Link
-                    to="/my-orders"
-                    onClick={() => setShowPages(false)}
-                    className="block px-4 py-2 hover:text-green-600"
-                  >
-                    My Orders
-                  </Link>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link to="/infrastructure" className="hover:text-yellow-300">
-              Infrastructure
-            </Link>
-          )}
+  {/* Pages Dropdown
+  <div className="relative">
+    <button
+      onClick={() => setShowPages(!showPages)}
+      className="hover:text-yellow-300"
+    >
+      Pages ▾
+    </button>
+
+    {showPages && (
+      <div
+        className="absolute z-10 w-56 mt-2 text-black transform -translate-x-1/2 bg-white shadow-2xl left-1/2 top-full rounded-xl"
+        onMouseLeave={() => setShowPages(false)}
+      >
+       
+        <Link
+          to="/phases"
+          onClick={() => setShowPages(false)}
+          className="block px-4 py-2 hover:text-green-600"
+        >
+          Phases
+        </Link>
+        <Link
+          to="/about-us"
+          onClick={() => setShowPages(false)}
+          className="block px-4 py-2 hover:text-green-600"
+        >
+          About Us
+        </Link>
+        <Link
+          to="/contact-us"
+          onClick={() => setShowPages(false)}
+          className="block px-4 py-2 hover:text-green-600"
+        >
+          Contact Us
+        </Link>
+        <Link
+          to="/team"
+          onClick={() => setShowPages(false)}
+          className="block px-4 py-2 hover:text-green-600"
+        >
+          Team
+        </Link>
+      </div>
+    )}
+  </div> */}
+  
+</div>
+
+
         </div>
 
-        {/* Right-side Buttons (Desktop) */}
-        <div className="hidden md:flex items-center gap-4">
+       
+
+        {/* Right Side (Mobile and Desktop) */}
+      <div className="flex items-center gap-3 ml-auto">
+        {/* Desktop Cart & Profile */}
+        <div className="items-center hidden gap-4 md:flex">
           {isAuthenticated ? (
-            <div className="flex items-center gap-4">
-              {/* Cart Icon with Hover and Badge */}
+            <>
               <Link
                 to="/cart"
-                className="relative group p-2 rounded-full hover:bg-yellow-200 transition duration-300 ease-in-out"
+                className="relative p-2 transition rounded-full group hover:bg-yellow-200"
                 title="Cart"
               >
                 <ShoppingCart
                   size={26}
-                  className="text-yellow-300 group-hover:text-green-700 transition duration-300"
+                  className="text-yellow-300 group-hover:text-green-700"
                 />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center shadow-md animate-pulse">
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                     {cartItemCount}
                   </span>
                 )}
               </Link>
 
-              {/* Profile Icon with Tooltip and Glow Effect */}
               <Link
                 to="/profile"
-                className="group p-2 rounded-full hover:bg-yellow-200 transition duration-300 ease-in-out"
+                className="p-2 transition rounded-full group hover:bg-yellow-200"
                 title="Profile"
               >
-                <User
-                  size={28}
-                  className="text-white group-hover:text-green-700 transition duration-300"
-                />
+                <User size={28} className="text-white group-hover:text-green-700" />
               </Link>
-            </div>
+            </>
           ) : (
             <>
               <Link
                 to="/login"
-                className="relative inline-block px-5 py-2 overflow-hidden font-semibold text-white-700 border-2 border-yellow-300 rounded-lg group hover:text-white transition duration-300 ease-in-out"
+                className="relative inline-block px-5 py-2 overflow-hidden font-semibold transition border-2 border-yellow-300 rounded-lg text-white-700 group hover:text-white"
               >
-                <span className="absolute left-0 top-0 w-full h-0 bg-yellow-300 transition-all duration-300 ease-in-out group-hover:h-full group-hover:top-0 z-0"></span>
+                <span className="absolute top-0 left-0 z-0 w-full h-0 transition-all duration-300 ease-in-out bg-yellow-300 group-hover:h-full"></span>
                 <span className="relative z-10">Login</span>
               </Link>
-
-              <Link
+              {/* <Link
                 to="/register"
-                className="relative inline-block px-5 py-2 overflow-hidden font-semibold text-white-700 border-2 border-yellow-300 rounded-lg group hover:text-white transition duration-300 ease-in-out"
+                className="relative inline-block px-5 py-2 overflow-hidden font-semibold transition border-2 border-yellow-300 rounded-lg text-white-700 group hover:text-white"
               >
-                <span className="absolute left-0 top-0 w-full h-0 bg-yellow-300 transition-all duration-300 ease-in-out group-hover:h-full group-hover:top-0 z-0"></span>
+                <span className="absolute top-0 left-0 z-0 w-full h-0 transition-all duration-300 ease-in-out bg-yellow-300 group-hover:h-full"></span>
                 <span className="relative z-10">Register</span>
-              </Link>
+              </Link> */}
             </>
           )}
         </div>
 
-        {/* Hamburger for Mobile */}
-        <div className="md:hidden ml-auto">
+        {/* Mobile Auth Buttons or Cart/Profile */}
+        <div className="flex items-center gap-3 md:hidden">
+          {isAuthenticated ? (
+            <>
+              <Link to="/cart" title="Cart" className="relative text-yellow-300">
+                <ShoppingCart size={24} />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Link>
+              <Link to="/profile" title="Profile">
+                <User size={24} className="text-white" />
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="px-3 py-1 font-medium text-yellow-300 border border-yellow-300 rounded"
+              >
+                Login
+              </Link>
+              {/* <Link
+                to="/register"
+                className="px-3 py-1 font-medium text-yellow-300 border border-yellow-300 rounded"
+              >
+                Register
+              </Link> */}
+            </>
+          )}
+        </div>
+
+        {/* Hamburger Menu (Mobile Only) */}
+        <div className="md:hidden">
           <button onClick={() => setMobileMenuOpen(true)}>
-            <Menu size={28} />
+            <Menu size={28} className="text-white" />
           </button>
         </div>
       </div>
-
-      {/* Mobile Sidebar */}
+{/* Mobile Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-green-800 text-white transform transition-transform duration-300 z-30 ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
@@ -263,172 +391,170 @@ const Navbar = () => {
         </div>
 
         <nav className="flex flex-col gap-4 px-6 mt-4 text-lg">
-          <Link
+          
+         {isAuthenticated ? (
+          <div className="flex flex-col space-y-3">
+{/* Mobile Shop */}
+          <div>
+            <button
+              onClick={() => setMobileShowShop(!mobileShowShop)}
+              className="flex items-center justify-between w-full font-semibold text-left hover:text-yellow-200 blink"
+            >
+              Book Now ▾
+            </button>
+
+            {mobileShowShop && (
+  <div className="pr-2 mt-4 ml-4 overflow-y-auto max-h-48">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      {vegetableList.map((veg, i) => (
+        <button
+          key={i}
+          onClick={() => {
+            const vegPath = `/vegetable/${veg.toLowerCase().replace(/\s+/g, "-")}`;
+            if (!isAuthenticated) {
+              localStorage.setItem("redirectAfterLogin", vegPath);
+              navigate("/login");
+            } else {
+              navigate(vegPath);
+            }
+            setShowShopDropdown(false);
+          }}
+          className="p-1 text-sm font-semibold text-center text-green-900 transition-transform duration-300 transform bg-green-100 shadow-md hover:bg-green-200 rounded-xl hover:shadow-xl hover:scale-105 sm:text-base"
+        >
+          {veg}
+        </button>
+      ))}
+    </div>
+  </div>
+)}
+
+          </div>
+          {/* product */}
+           <NavLink
+      to="/products"
+      className={({ isActive }) =>
+        isActive
+          ? 'text-yellow-300 font-semibold'
+          : 'hover:text-yellow-300'
+      }
+    >
+      Products
+    </NavLink>
+    
+
+    <Link
+      to="/my-orders"
+      onClick={handleMobileLinkClick}
+      className="font-semibold hover:text-yellow-200"
+    >
+      My Orders
+    </Link>
+  </div>
+          ) : (
+<>
+
+<Link
             to="/"
             className="hover:text-yellow-200"
             onClick={handleMobileLinkClick}
           >
             Home
           </Link>
-
           {/* Mobile Shop */}
           <div>
             <button
               onClick={() => setMobileShowShop(!mobileShowShop)}
-              className="w-full text-left hover:text-yellow-200 font-semibold flex justify-between items-center blink"
+              className="flex items-center justify-between w-full font-semibold text-left hover:text-yellow-200 blink"
             >
               Book Now ▾
             </button>
 
             {mobileShowShop && (
-              <div className="mt-4 ml-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {vegetableList.map((veg, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      const vegPath = `/vegetable/${veg
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")}`;
-                      if (!isAuthenticated) {
-                        localStorage.setItem("redirectAfterLogin", vegPath);
-                        navigate("/login");
-                      } else {
-                        navigate(vegPath);
-                      }
-                      setShowShopDropdown(false);
-                    }}
-                    className="p-1 bg-green-100 hover:bg-green-200 text-green-900 rounded-xl shadow-md hover:shadow-xl transition-transform duration-300 transform hover:scale-105 font-semibold text-sm sm:text-base text-center"
-                  >
-                    {veg}
-                  </button>
-                ))}
-              </div>
-            )}
+  <div className="pr-2 mt-4 ml-4 overflow-y-auto max-h-48">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      {vegetableList.map((veg, i) => (
+        <button
+          key={i}
+          onClick={() => {
+            const vegPath = `/vegetable/${veg.toLowerCase().replace(/\s+/g, "-")}`;
+            if (!isAuthenticated) {
+              localStorage.setItem("redirectAfterLogin", vegPath);
+              navigate("/login");
+            } else {
+              navigate(vegPath);
+            }
+            setShowShopDropdown(false);
+          }}
+          className="p-1 text-sm font-semibold text-center text-green-900 transition-transform duration-300 transform bg-green-100 shadow-md hover:bg-green-200 rounded-xl hover:shadow-xl hover:scale-105 sm:text-base"
+        >
+          {veg}
+        </button>
+      ))}
+    </div>
+  </div>
+)}
+
           </div>
-
-          <Link
-            to="/team"
-            className="hover:text-yellow-200 font-semibold"
-            onClick={handleMobileLinkClick}
-          >
-            Team
-          </Link>
-          <Link
-            to="/about-us"
-            className="hover:text-yellow-200 font-semibold"
-            onClick={handleMobileLinkClick}
-          >
-            About Us
-          </Link>
-          <Link
-            to="/contact-us"
-            className="hover:text-yellow-200 font-semibold"
-            onClick={handleMobileLinkClick}
-          >
-            Contact us
-          </Link>
-          <Link
-            to="/phases"
-            className="hover:text-yellow-200 font-semibold"
-            onClick={handleMobileLinkClick}
-          >
-            Phases
-          </Link>
-
-          {isAuthenticated ? (
-            // 🔐 Authenticated → show dropdown for Pages
-            <div>
-              <button
-                onClick={() => setMobileShowPages(!mobileShowPages)}
-                className="w-full text-left hover:text-yellow-200 font-semibold flex justify-between items-center"
-              >
-                Pages ▾
-              </button>
-
-              {mobileShowPages && (
-                <div className="mt-2 ml-4 flex flex-col gap-2">
-                  <Link
-                    to="/infrastructure"
-                    className="hover:text-yellow-200"
-                    onClick={handleMobileLinkClick}
-                  >
-                    Infrastructure
-                  </Link>
-                  <Link
-                    to="/my-orders"
-                    className="hover:text-yellow-200"
-                    onClick={handleMobileLinkClick}
-                  >
-                    My Orders
-                  </Link>
-                </div>
-              )}
-            </div>
-          ) : (
-            // 🔓 Not Authenticated → show Infrastructure directly
+          
             <Link
               to="/infrastructure"
-              className="hover:text-yellow-200 font-semibold"
+              className="font-semibold hover:text-yellow-200"
               onClick={handleMobileLinkClick}
             >
               Infrastructure
             </Link>
+
+          {/* <Link
+            to="/team"
+            className="font-semibold hover:text-yellow-200"
+            onClick={handleMobileLinkClick}
+          >
+            Team
+          </Link> */}
+          
+          <Link
+            to="/about-us"
+            className="font-semibold hover:text-yellow-200"
+            onClick={handleMobileLinkClick}
+          >
+            About Us
+          </Link>
+          {/* <Link
+            to="/contact-us"
+            className="font-semibold hover:text-yellow-200"
+            onClick={handleMobileLinkClick}
+          >
+            Contact us
+          </Link> */}
+          
+          {/* <Link
+            to="/phases"
+            className="font-semibold hover:text-yellow-200"
+            onClick={handleMobileLinkClick}
+          >
+            Phases
+          </Link> */}
+</>
           )}
 
-          {/* Cart and Profile (Mobile) */}
-          <div className="flex items-center gap-4 mt-6">
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to="/cart"
-                  className="relative inline-block text-yellow-500"
-                >
-                  <ShoppingCart size={28} />
-                  {cartItemCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
-
-                <Link
-                  to="/profile"
-                  className="hover:text-yellow-200"
-                  title="Profile"
-                >
-                  <User size={30} />
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="relative inline-block px-5 py-2 overflow-hidden font-semibold text-white-700 border-2 border-yellow-300 rounded-lg group hover:text-white transition duration-300 ease-in-out"
-                >
-                  <span className="absolute left-0 top-0 w-full h-0 bg-yellow-300 transition-all duration-300 ease-in-out group-hover:h-full group-hover:top-0 z-0"></span>
-                  <span className="relative z-10">Login</span>
-                </Link>
-
-                <Link
-                  to="/register"
-                  className="relative inline-block px-5 py-2 overflow-hidden font-semibold text-white-700 border-2 border-yellow-300 rounded-lg group hover:text-white transition duration-300 ease-in-out"
-                >
-                  <span className="absolute left-0 top-0 w-full h-0 bg-yellow-300 transition-all duration-300 ease-in-out group-hover:h-full group-hover:top-0 z-0"></span>
-                  <span className="relative z-10">Register</span>
-                </Link>
-              </>
-            )}
-          </div>
+        
         </nav>
       </div>
 
       {/* Backdrop */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black opacity-50 z-10"
+          className="fixed inset-0 z-10 bg-black opacity-50"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
+      </div>
+
+
+      </div>
+
+      
+
     </nav>
   );
 };

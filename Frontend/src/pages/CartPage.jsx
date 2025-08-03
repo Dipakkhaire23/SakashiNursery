@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
+import { LoaderCircle } from "lucide-react";
 // const token = localStorage.getItem('token');
 
 const CartPage = () => {
@@ -12,15 +12,22 @@ const CartPage = () => {
   const [address, setAddress] = useState("");
   const [deliveryDate, setDeliveryDate] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isProcessing1, setIsProcessing1] = useState(false);
+ const [processingItemId, setProcessingItemId] = useState(null);
+   const [isAgreed, setIsAgreed] = useState(false);
 
   const handleCheckoutClick = () => {
-    setIsProcessing(true); // Start processing
-    setTimeout(() => {
-      setIsProcessing(false); // Stop processing
-      setShowModal(true); // Show modal after 1 second
-    }, 1000);
-  };
+  if (!isAgreed) {
+    alert("Please agree to the terms and conditions before proceeding.");
+    return;
+  }
+
+  setIsProcessing(true); // Start processing
+  setTimeout(() => {
+    setIsProcessing(false); // Stop processing
+    setShowModal(true); // Show modal after 1 second
+  }, 1000);
+};
+
 
   const fetchCartItems = async () => {
     try {
@@ -47,6 +54,10 @@ const CartPage = () => {
       setLoading(false);
     }
   };
+ useEffect(() => {
+    fetchCartItems();
+  }, []);
+
 
   const totalAmount = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity * 0.25,
@@ -78,84 +89,99 @@ const CartPage = () => {
     }
   };
 
-  const removeFromCart = async (id) => {
-    try {
-      setIsProcessing1(true)
-      await axios.delete(
-        import.meta.env.VITE_BACKEND_URL+`/api/carts/deleteBy-ProductID/${id}`,
-        {
-          // headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true, // ✅ Send cookies with the request
-        }
-      );
-      toast.success("Removed from cart");
-      //  window.location.reload();
-      setCartItems((prev) => prev.filter((item) => item.id !== id));
-    } catch (error) {
-      console.error("Error removing item:", error);
-      toast.error("Failed to remove item");
-    } finally{
-      setIsProcessing1(false)
-    }
-  };
+ const removeFromCart = async (id) => {
+  try {
+    setProcessingItemId(id); // ✅ Only mark this item as processing
+    await axios.delete(
+      import.meta.env.VITE_BACKEND_URL + `/api/carts/deleteBy-ProductID/${id}`,
+      {
+        withCredentials: true,
+      }
+    );
+    toast.success("Removed from cart");
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  } catch (error) {
+    console.error("Error removing item:", error);
+    toast.error("Failed to remove item");
+  } finally {
+    setProcessingItemId(null); // ✅ Clear after operation
+  }
+};
+
 
   const loadRazorpayScript = () => {
+   
+
     return new Promise((resolve) => {
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
+      
     });
   };
 
   const createOrder = async () => {
-    try {
-      console.log(totalAmount);
-      const res = await axios.post(
-        import.meta.env.VITE_BACKEND_URL+"/api/payment/create-order",
-        { amount: totalAmount },
-        {
-          headers: {
-            // Authorization: `Bearer ${token}`,
+  try {
+    console.log("Sending amount:", totalAmount); // confirm value
+    const res = await axios.post(
+      import.meta.env.VITE_BACKEND_URL + "/api/payment/create-order",
+      { amount: totalAmount }, // ✅ Can be double
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
 
-            "Content-Type": "application/json",
-          },
-          withCredentials: true, // ✅ Send cookies with the request
-        }
-      );
-      return res.data;
-    } catch (err) {
-      toast.error("Amount Should be In Integer");
-      console.log(err);
-    }
-  };
+    console.log("Order created:", res.data); // ✅ check if res has amount
+    return res.data;
+  } catch (err) {
+    console.error("Create order failed:", err);
+    toast.error("Error creating order: " + (err.response?.data || err.message));
+    return null;
+  }
+};
 
- const handlePayment = async () => {
-  setIsProcessing(true); // Start spinner
+
+const handlePayment = async () => {
+  setIsProcessing(true); // ⏳ Start loading
 
   const isLoaded = await loadRazorpayScript();
   if (!isLoaded) {
-    toast.error(
-      "Failed to load Razorpay SDK. Check your internet connection."
-    );
-    setIsProcessing(false); // Stop spinner
+    toast.error("Failed to load Razorpay SDK. Check your internet connection.");
+    setIsProcessing(false);
     return;
   }
+   
 
   try {
-    const order = await createOrder();
+    
+    // Step 1: Create order on backend
+    const order = await createOrder(); // should return: { id, amount, currency }
+    if (!order || !order.amount || !order.id) {
+  toast.error("Order creation failed. Please try again.");
+  setIsProcessing(false);
+  return;
+}
+
     const options = {
-      key: "rzp_test_chm9NHqwqlrr1z",
+      key: "rzp_test_oEJUee2SIoQsVi", // ✅ Live Razorpay key    rzp_live_MHCWVpI4r7gNl1
       amount: order.amount,
       currency: order.currency,
       name: "Sakshi Nursery",
       description: "Plant Order Payment",
       order_id: order.id,
-      handler: async function (response) {
+      theme: { color: "#0e9f6e" },
+
+      handler: async (response) => {
         try {
-          const res = await axios.post(
-            import.meta.env.VITE_BACKEND_URL+"/api/payment/verify",
+          navigate("/congratulations");
+          // Step 2: Verify payment with backend
+          const verifyRes = await axios.post(
+            import.meta.env.VITE_BACKEND_URL + "/api/payment/verify",
             {
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
@@ -164,90 +190,115 @@ const CartPage = () => {
               deliveryDate,
             },
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               withCredentials: true,
             }
           );
 
-          toast.success(res.data || "Payment Successful!");
-          fetchCartItems();
-          setShowModal(false); // ✅ Close modal after payment success
+          toast.success(verifyRes.data || "Payment Successful!");
+
+          // ✅ Close modal first
+          setShowModal(false);
+
+          // ✅ Delay navigation slightly to ensure modal closes before page change
+          setTimeout(() => {
+            navigate("/congratulations", {
+              state: {
+                amount: order.amount / 100,
+                orderId: order.id,
+              },
+            });
+          }, 300);
         } catch (err) {
-          toast.error("Payment verification failed!");
-          console.error(err);
+          console.error("Verification failed:", err);
+          toast.error("Payment verification failed.");
         } finally {
-          setIsProcessing(false); // Stop spinner after verification
+          setIsProcessing(false);
         }
       },
-      theme: { color: "#0e9f6e" },
     };
 
     const rzp = new window.Razorpay(options);
+
+    // Open Razorpay payment modal
     rzp.open();
 
-    // Stop spinner once Razorpay popup is opened
-    rzp.on("payment.failed", function () {
-      toast.error("Payment Failed!");
-      setIsProcessing(false); // Stop spinner
+    // Handle payment failure
+    rzp.on("payment.failed", function (response) {
+      console.error("Payment failed:", response);
+      toast.error("Payment failed. Please try again.");
+      setIsProcessing(false);
     });
   } catch (error) {
+    console.error("Payment error:", error);
     toast.error("Something went wrong during payment.");
-    console.error(error);
-    setIsProcessing(false); // Stop spinner
+    setIsProcessing(false);
   }
 };
-  const navigate = useNavigate();
-const handleClick = () => {
-    navigate("/vegetable", ); 
-  };
 
-  useEffect(() => {
-    fetchCartItems();
-  }, []);
+
+  const navigate = useNavigate();
+// const handleClick = () => {
+//     navigate("/vegetable", ); 
+//   };
+
+  // useEffect(() => {
+  //   fetchCartItems();
+  // }, []);
 
   // if (loading) return <div className="p-6">Loading...</div>;
 
   return (
-    <main className="p-6 bg-green-50 min-h-screen">
+    <main className="min-h-screen p-6 bg-green-50">
       <Toaster position="top-right" />
-      <h1 className="text-2xl font-bold mb-4 text-center text-green-800">
+      <h1 className="mb-4 text-2xl font-bold text-center text-green-800">
         Cart Items Added
       </h1>
 
       {loading ? (
-  // 🌀 Spinner while loading
-  <div className="flex justify-center items-center min-h-[200px]">
-    <div className="w-12 h-12 border-4 border-green-500 border-dashed rounded-full animate-spin"></div>
-  </div>
+  <div className="flex items-center justify-center py-10">
+          <LoaderCircle className="w-6 h-6 text-blue-500 animate-spin" />
+          <span className="ml-3 text-gray-600">Loading CartItems...</span>
+        </div>
 ) :cartItems.length === 0 ? (
-       <>
-         <p className="text-center text-gray-600">Now your cart is empty.</p>
-      <h4 className="text-center text-gray-600">
-        If you added a product but it went out of stock, it won’t show here.
-        <span
-          onClick={handleClick}
-          className="text-green-600 underline cursor-pointer"
-        >
-          Click here
-        </span>{" "}
-        to view its status.
-      </h4></>
+     <>
+  <p className="text-center text-gray-600">Now your cart is empty.</p>
+  {/* <h4 className="text-center text-gray-600">
+    If you added a product but it went out of stock, it won’t show here.{" "}
+    <span
+      onClick={handleClick}
+      className="text-green-600 underline cursor-pointer"
+    >
+      Click here
+    </span>{" "}
+    to view its status.
+  </h4> */}
+
+  <div className="flex justify-center mt-6">
+    <button
+      onClick={() => navigate('/products')}
+      className="px-6 py-2 text-white transition bg-green-600 rounded hover:bg-green-700"
+    >
+      Continue Shopping
+    </button>
+  </div>
+</>
+
+      
       ) : (
-        <div className="grid gap-4 max-w-sm mx-auto">
+        <div className="grid max-w-sm gap-4 mx-auto">
           {cartItems.map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-lg p-5 mb-4 transition-all duration-300"
+              className="p-5 mb-4 transition-all duration-300 bg-white border border-gray-200 shadow-md rounded-xl hover:shadow-lg"
             >
-              <div className="flex justify-between items-start gap-4">
+              <div className="flex items-start justify-between gap-4">
                 {/* Left: Product Info */}
                 <div className="flex-1">
-                  <h2 className="text-xl font-semibold text-green-800 mb-1">
+                  <h2 className="mb-1 text-xl font-semibold text-green-800">
                     {item.productName}
                   </h2>
-                  <p className="text-gray-700 text-sm mb-2">
+                  <p className="mb-2 text-sm text-gray-700">
                     Price per unit: ₹{item.price.toFixed(2)}
                   </p>
 
@@ -264,7 +315,7 @@ const handleClick = () => {
                             parseInt(e.target.value)
                           )
                         }
-                        className="border border-gray-300 rounded-md px-3 py-1 w-20 focus:outline-none focus:ring focus:ring-green-300"
+                        className="w-20 px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-green-300"
                       />
                       <button
                         onClick={() => {
@@ -287,7 +338,7 @@ const handleClick = () => {
                             )
                           )
                         }
-                        className="text-gray-500 underline text-sm hover:text-gray-700"
+                        className="text-sm text-gray-500 underline hover:text-gray-700"
                       >
                         Cancel
                       </button>
@@ -302,7 +353,7 @@ const handleClick = () => {
 
                 {/* Right: Action Buttons */}
                 {!item.isEditing && (
-                  <div className="flex flex-col gap-2 items-end">
+                  <div className="flex flex-col items-end gap-2">
                     <button
                       onClick={() =>
                         setCartItems((prev) =>
@@ -315,51 +366,53 @@ const handleClick = () => {
                     >
                       ✏️ Edit
                     </button>
-                     <button
-    onClick={() => removeFromCart(item.id)}
-      className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 disabled:opacity-60 flex items-center justify-center gap-2"
-      disabled={isProcessing1}
-    >
-      {isProcessing1 ? (
-        <>
-          <svg
-            className="animate-spin h-5 w-5 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
-            ></path>
-          </svg>
-          Removing...
-        </>
-      ) : (
-        "Remove"
-      )}
-    </button>
+                    
+                    <button
+  onClick={() => removeFromCart(item.id)}
+  className="flex items-center justify-center gap-2 px-6 py-2 text-white bg-red-600 rounded hover:bg-red-700 disabled:opacity-60"
+  disabled={processingItemId === item.id}
+>
+  {processingItemId === item.id ? (
+    <>
+      <svg
+        className="w-5 h-5 text-white animate-spin"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
+        ></path>
+      </svg>
+      Removing...
+    </>
+  ) : (
+    "Remove"
+  )}
+</button>
+
                   </div>
                 )}
               </div>
 
               {/* Bottom Info: Booking Amount */}
               {!item.isEditing && (
-                <div className="mt-4 border-t pt-3">
-                  <p className="text-green-700 font-medium text-sm">
+                <div className="pt-3 mt-4 border-t">
+                  <p className="text-sm font-medium text-green-700">
                     💰 25% Booking Amount: ₹
                     {(item.price * item.quantity * 0.25).toFixed(2)}
                   </p>
-                  <p className="text-gray-500 text-xs italic">
+                  <p className="text-xs italic text-gray-500">
                     * This amount must be paid upfront to confirm booking.
                   </p>
                 </div>
@@ -368,56 +421,73 @@ const handleClick = () => {
           ))}
 
           {/* Checkout Button */}
-<div className="mt-4 text-center">
-  <p className="text-lg font-semibold text-green-900">
-    Total Amount: ₹{totalAmount.toFixed(2)}
-  </p>
-  
-  <div className="mt-2 flex justify-center">
-    <button
-      onClick={handleCheckoutClick}
-      className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-60 flex items-center justify-center gap-2"
-      disabled={isProcessing}
-    >
-      {isProcessing ? (
-        <>
-          <svg
-            className="animate-spin h-5 w-5 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
-            ></path>
-          </svg>
-          Processing...
-        </>
-      ) : (
-        "Proceed to Checkout"
-      )}
-    </button>
-  </div>
-</div>
+ <div className="mt-4 text-center">
+      <p className="mb-2 text-sm text-gray-700">
+        Once you book and your booking is cancelled, we will not refund your money.
+      </p>
+
+      <div className="flex items-center justify-center mb-3">
+        <input
+          type="checkbox"
+          id="agree"
+          className="mr-2"
+          checked={isAgreed}
+          onChange={() => setIsAgreed(!isAgreed)}
+        />
+        <label htmlFor="agree" className="text-sm text-gray-800">
+          I agree to the terms and conditions.
+        </label>
+      </div>
+
+      <p className="text-lg font-semibold text-green-900">
+        Total Amount: ₹{totalAmount.toFixed(2)}
+      </p>
+
+      <div className="flex justify-center mt-2">
+        <button
+          onClick={handleCheckoutClick}
+          className="flex items-center justify-center gap-2 px-6 py-2 text-white bg-green-600 rounded hover:bg-green-700 disabled:opacity-60"
+          disabled={isProcessing || !isAgreed}
+        >
+          {isProcessing ? (
+            <>
+              <svg
+                className="w-5 h-5 text-white animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
+                ></path>
+              </svg>
+              Processing...
+            </>
+          ) : (
+            "Proceed to Checkout"
+          )}
+        </button>
+      </div>
+    </div>
 
         </div>
       )}
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-green-200 bg-opacity-40 z-50">
-          <div className="bg-white p-6 rounded shadow-md max-w-sm w-full">
-            <h2 className="text-xl font-bold mb-4 text-green-700">
+      {showModal && !isProcessing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-green-200 bg-opacity-40">
+          <div className="w-full max-w-sm p-6 bg-white rounded shadow-md">
+            <h2 className="mb-4 text-xl font-bold text-green-700">
               Enter Delivery Details
             </h2>
 
@@ -426,7 +496,7 @@ const handleClick = () => {
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full border rounded px-3 py-2 mb-4"
+              className="w-full px-3 py-2 mb-4 border rounded"
             />
 
             <label className="block mb-2 text-sm font-medium">
@@ -436,25 +506,25 @@ const handleClick = () => {
               type="date"
               value={deliveryDate}
               onChange={(e) => setDeliveryDate(e.target.value)}
-              className="w-full border rounded px-3 py-2 mb-4"
+              className="w-full px-3 py-2 mb-4 border rounded"
             />
 
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
                 Cancel
               </button>
               <button
         onClick={handlePayment}
-        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60 flex items-center justify-center gap-2"
+        className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700 disabled:opacity-60"
         disabled={isProcessing}
       >
         {isProcessing ? (
           <>
             <svg
-              className="animate-spin h-5 w-5 text-white"
+              className="w-5 h-5 text-white animate-spin"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"

@@ -4,7 +4,7 @@ import Google from "../images/google.png";
 import FarmerImage from "../images/LoginImage.jpg";
 import { Toaster, toast } from "react-hot-toast";
 import Logo from "../images/logo.png";
-
+import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
 
 //
@@ -16,6 +16,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+   const [loginLoading, setLoginLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,10 +31,10 @@ const Login = () => {
       firebasetoken: firebaseToken, // Include FCM token
     };
     
-setLoading(true); // Start loading
-    try {
 
-       
+    try {
+// setLoading(true); // Start loading
+       setLoginLoading(true);
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json",
@@ -49,17 +50,19 @@ setLoading(true); // Start loading
           localStorage.setItem("userId", data.id);
        
         localStorage.setItem("token", data.token);
+        
      
       // window.location.reload()
  
 
   toast.success("Welcome to Sakshi Nursery" + data.name);
 
-  const redirectPath = localStorage.getItem("redirectAfterLogin") || "/";
+  const redirectPath = localStorage.getItem("redirectAfterLogin") || "/products";
   localStorage.removeItem("redirectAfterLogin");
    
   navigate(redirectPath,{replace:true});
   window.location.reload();
+  <Navbar/>
       } else {
         const err = await response.json();
         alert(err.message || "Login failed");
@@ -69,14 +72,15 @@ setLoading(true); // Start loading
       console.error("Login error:", err);
     }
     finally {
-    setLoading(false); // Stop loading
+    // setLoading(false); // Stop loading
+    setLoginLoading(false);
   }
   };
   
   const handleGoogleLogin = () => {
   // Store redirect path before navigating away
-  const currentPath = location.pathname;
-  localStorage.setItem("redirectAfterLogin", currentPath);
+  // const currentPath = location.pathname;
+  // localStorage.setItem("redirectAfterLogin", currentPath);
 
   // Show spinner immediately (for a short moment)
   setLoading(true);
@@ -90,28 +94,28 @@ setLoading(true); // Start loading
 
   return (
   
-     <div className="min-h-screen bg-green-50 flex items-center justify-center px-4 py-10">
+     <div className="flex items-center justify-center min-h-screen px-4 py-10 bg-green-50">
     <Toaster position="top-center" />
 
     {loading ? (
-<div className="flex flex-col items-center justify-center h-full w-full">
+<div className="flex flex-col items-center justify-center w-full h-full">
   {/* Orbit container */}
   <div className="relative w-56 h-56">
-  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 animate-orbit">
-    <img
+  <div className="absolute top-0 transform -translate-x-1/2 left-1/2 animate-orbit">
+    <img   loading="lazy"
       src={Logo}
       alt="Loading..."
       className="w-40 h-32"  
     />
   </div>
   </div>
-  <p className="mt-4 text-green-700 font-semibold">Logging in...</p>
+  <p className="mt-4 font-semibold text-green-700">Logging in...</p>
 </div>
 
 
     ) : (
          <motion.div
-      className="flex justify-center items-center min-h-screen bg-gray-100"
+      className="flex items-center justify-center min-h-screen bg-gray-100"
       initial={{ opacity: 0, y: -50 }}   // Start invisible and slightly up
       animate={{ opacity: 1, y: 0 }}    // Fade in + slide down
       exit={{ opacity: 0, y: 50 }}      // Fade out + slide down on exit
@@ -119,34 +123,34 @@ setLoading(true); // Start loading
     >
 
       
-      <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 max-w-4xl w-full">
+      <div className="flex flex-col w-full max-w-4xl overflow-hidden bg-white border border-gray-200 rounded-lg shadow-lg lg:flex-row">
         {/* Left: Image */}
         <div className="w-full lg:w-1/2 h-[75%]">
-          <img
+          <img   loading="lazy"
             src={FarmerImage}
             alt="Farmer"
-            className="w-full h-full object-cover object-top"
+            className="object-cover object-top w-full h-full"
           />
         </div>
 
         {/* Right: Login Form */}
-        <div className="w-full lg:w-1/2 p-6">
-          <h1 className="text-center text-2xl font-bold text-green-700 mb-2">
+        <div className="w-full p-6 lg:w-1/2">
+          <h1 className="mb-2 text-2xl font-bold text-center text-green-700">
             Sakshi Nursery
           </h1>
-          <p className="text-center text-gray-600 mb-4 text-sm">
+          <p className="mb-4 text-sm text-center text-gray-600">
             Login to continue your journey with us.
           </p>
 
           {error && (
-            <p className="text-red-600 text-center mb-3 text-sm">{error}</p>
+            <p className="mb-3 text-sm text-center text-red-600">{error}</p>
           )}
 
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center border border-gray-300 py-2 px-3 rounded-md hover:border-green-500 transition mb-4 text-sm"
+            className="flex items-center justify-center w-full px-3 py-2 mb-4 text-sm transition border border-gray-300 rounded-md hover:border-green-500"
           >
-            <img src={Google} alt="Google" className="w-5 h-5 mr-2" />
+            <img    loading="lazy" src={Google} alt="Google" className="w-5 h-5 mr-2" />
             Sign in with Google
           </button>
 
@@ -161,7 +165,7 @@ setLoading(true); // Start loading
               <input
                 type="email"
                 id="useremail"
-                className="w-full p-2 mt-1 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 mt-1 text-sm border border-gray-300 rounded-md"
                 placeholder="admin@sakshinursery.com"
                 value={useremail}
                 onChange={(e) => setUseremail(e.target.value)}
@@ -178,14 +182,14 @@ setLoading(true); // Start loading
               <input
                 type="password"
                 id="password"
-                className="w-full p-2 mt-1 border border-gray-300 rounded-md text-sm"
+                className="w-full p-2 mt-1 text-sm border border-gray-300 rounded-md"
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
-            <div className="flex justify-between items-center text-sm mb-3">
+            <div className="flex items-center justify-between mb-3 text-sm">
               <a
                 href="/forgot-password"
                 className="text-green-600 hover:underline"
@@ -193,16 +197,41 @@ setLoading(true); // Start loading
                 Forgot?
               </a>
             </div>
-
-            <button
-              type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm"
-            >
-              Login
-            </button>
+ <button
+        type="submit"
+        disabled={loginLoading}
+        className={`w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm ${
+          loading ? "cursor-not-allowed opacity-70" : ""
+        }`}
+      >
+        {loginLoading ? (
+          <svg
+            className="w-5 h-5 text-white animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+        ) : (
+          "Login"
+        )}
+      </button>
           </form>
 
-          <div className="text-center mt-3 text-sm">
+          <div className="mt-3 text-sm text-center">
             Don't have an account?{" "}
             <a href="/register" className="text-green-600 hover:underline">
               Sign up

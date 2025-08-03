@@ -255,7 +255,7 @@ const getImageUrl = (image) => {
         </button>
       </div>
 
-      <div className="p-4 bg-white-50 border rounded-lg">
+      <div className="p-4 border rounded-lg bg-white-50">
   <div className="relative">
     <Search className="absolute text-gray-400 transform -translate-y-1/2 left-3 top-1/2" size={18} />
     <input
@@ -271,14 +271,14 @@ const getImageUrl = (image) => {
 
    {loadingall ? (
       <div className="flex items-center justify-center py-10">
-        <Loader className="animate-spin text-blue-500" size={40} />
+        <Loader className="text-blue-500 animate-spin" size={40} />
         <span className="ml-3 text-gray-600">Loading products...</span>
       </div>
-    ) :  (<div className="bg-white-50 border rounded-lg">
+    ) :  (<div className="border rounded-lg bg-white-50">
   {/* Desktop View - Styled Product Table */}
-<div className="hidden md:block overflow-x-auto">
-  <table className="w-full text-sm text-left bg-white border border-gray-200 shadow-sm rounded-lg">
-    <thead className="bg-white-50 text-gray-700">
+<div className="hidden overflow-x-auto md:block">
+  <table className="w-full text-sm text-left bg-white border border-gray-200 rounded-lg shadow-sm">
+    <thead className="text-gray-700 bg-white-50">
       <tr>
         <th className="px-6 py-3 font-semibold">Plant</th>
         <th className="px-6 py-3 font-semibold">Category</th>
@@ -290,19 +290,19 @@ const getImageUrl = (image) => {
     </thead>
     <tbody className="divide-y divide-gray-100">
       {filteredProducts.map((product) => (
-        <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+        <tr key={product.id} className="transition-colors hover:bg-gray-50">
           <td
             className="flex items-center gap-3 px-6 py-4 cursor-pointer hover:underline"
             onClick={() => fetchProductDetailByName(product.name)}
           >
-            <img
+            <img   loading="lazy"
                    src={
   Array.isArray(product.images) && product.images.length > 0
     ? getImageUrl(product.images[0])  // Pass the first image object
     : "https://via.placeholder.com/50"
 }
               alt="Product"
-              className="w-10 h-10 object-cover rounded border border-gray-200"
+              className="object-cover w-10 h-10 border border-gray-200 rounded"
             />
             <span className="font-medium text-gray-800">{product.name}</span>
           </td>
@@ -323,17 +323,17 @@ const getImageUrl = (image) => {
             </span>
           </td>
 
-          <td className="px-6 py-4 flex justify-center gap-3">
+          <td className="flex justify-center gap-3 px-6 py-4">
             <button
               onClick={() => handleEdit(product)}
-              className="text-green-600 hover:text-green-800 transition"
+              className="text-green-600 transition hover:text-green-800"
               title="Edit"
             >
               <Edit size={18} />
             </button>
             <button
               onClick={() => handleDelete(product.name)}
-              className="text-red-600 hover:text-red-800 transition"
+              className="text-red-600 transition hover:text-red-800"
               title="Delete"
             >
               <Trash2 size={18} />
@@ -466,7 +466,7 @@ const getImageUrl = (image) => {
 
       {/* ... (rest of the UI remains unchanged) */}
 
-      {showModal && (
+  {showModal && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
     <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
       <h2 className="mb-4 text-xl font-bold text-center">
@@ -542,46 +542,55 @@ const getImageUrl = (image) => {
           <option value="OUT_OF_STOCK">OUT_OF_STOCK</option>
         </select>
 
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-4">
           <button
-  type="submit"
-  disabled={loading}
-  className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 flex items-center justify-center gap-2"
->
-  {loading ? (
-    <>
-      <svg
-        className="w-4 h-4 animate-spin"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-        ></circle>
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
-        ></path>
-      </svg>
-      <span>Processing...</span>
-    </>
-  ) : (
-    <span>{editingProduct ? "Update Plant" : "Add Plant"}</span>
-  )}
-</button>
+            type="submit"
+            disabled={loading}
+            className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+          >
+            {loading ? (
+              <>
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
+                  ></path>
+                </svg>
+                <span>Processing...</span>
+              </>
+            ) : (
+              <span>{editingProduct ? "Update Plant" : "Add Plant"}</span>
+            )}
+          </button>
 
+          {/* Cancel Button */}
+          <button
+            type="button"
+            onClick={() => setShowModal(false)}
+            className="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600"
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </div>
   </div>
 )}
+
 
     </div>
   );

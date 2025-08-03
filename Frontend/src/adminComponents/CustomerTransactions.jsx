@@ -1,13 +1,14 @@
-import  { useEffect, useState } from "react";
-import { Eye } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { CSVLink } from "react-csv";
+import { Eye, Loader } from "lucide-react"; // Ensure you're importing icons
 
 const CustomerTransactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTxn, setSelectedTxn] = useState(null);
+  const [loading, setLoading] = useState(true);
   const transactionsPerPage = 10;
 
   useEffect(() => {
@@ -16,17 +17,19 @@ const CustomerTransactions = () => {
 
   const fetchTransactions = async () => {
     try {
-      // const token = localStorage.getItem("token");
+      setLoading(true);
       const res = await axios.get(
-        import.meta.env.VITE_BACKEND_URL+"/api/admin/orders/payment-info/all",
+        import.meta.env.VITE_BACKEND_URL + "/api/admin/orders/payment-info/all",
         {
-          // headers: { Authorization: `Bearer ${token}` },
-                   withCredentials: true // ✅ Send cookies with the request
-
+          withCredentials: true,
         }
       );
 
-      const transformed = res.data.map((txn, index) => ({
+      const sorted = res.data
+        .slice()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // 🆕 Sort by date
+
+      const transformed = sorted.map((txn, index) => ({
         id: index + 1,
         customerName: txn.customername,
         email: txn.email,
@@ -37,11 +40,14 @@ const CustomerTransactions = () => {
         razorpayPaymentId: txn.razorpayPaymentId,
         razorpaySignature: txn.razorpaySignature,
         mobile: txn.mobileno,
+        createdAt: new Date(txn.createdAt).toLocaleString(), // 🆕 Human-readable date
       }));
 
       setTransactions(transformed);
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,82 +63,89 @@ const CustomerTransactions = () => {
 
   return (
     <div className="p-4 sm:p-6">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center sm:text-left">
+      <h2 className="mb-4 text-xl font-bold text-center sm:text-2xl sm:text-left">
         💳 Customer Transactions
       </h2>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col gap-3 mb-4 sm:flex-row">
         <input
           type="text"
           placeholder="Search by name or email"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-2 border rounded w-full sm:w-1/3"
+          className="w-full p-2 border rounded sm:w-1/3"
         />
         <CSVLink
           data={filtered}
           filename={"transactions.csv"}
-          className="px-4 py-2 bg-blue-600 text-white rounded text-center w-full sm:w-auto"
+          className="w-full px-4 py-2 text-center text-white bg-blue-600 rounded sm:w-auto"
         >
           Export CSV
         </CSVLink>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto text-sm">
-        <table className="min-w-full border rounded bg-white shadow-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-2 border">Customer</th>
-              <th className="p-2 border">Email</th>
-              <th className="p-2 border">Amount</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Receipt</th>
-              <th className="p-2 border text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginated.map((txn) => (
-              <tr key={txn.id} className="hover:bg-gray-50 text-xs sm:text-sm">
-                <td className="p-2 border">{txn.customerName}</td>
-                <td className="p-2 border break-all">{txn.email}</td>
-                <td className="p-2 border">₹{txn.amount}</td>
-                <td className="p-2 border">{txn.status}</td>
-                <td className="p-2 border break-all">{txn.receipt}</td>
-                <td className="p-2 border text-center">
-                  <button
-                    onClick={() => setSelectedTxn(txn)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <Eye size={16} />
-                  </button>
-                </td>
+      {/* Loader */}
+      {loading ? (
+        <div className="flex items-center justify-center py-10">
+          <Loader className="w-6 h-6 text-blue-500 animate-spin" />
+          <span className="ml-3 text-gray-600">Loading Transaction...</span>
+        </div>
+      ) : (
+        <div className="overflow-x-auto text-sm">
+          <table className="min-w-full bg-white border rounded shadow-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-2 border">Customer</th>
+                <th className="p-2 border">Email</th>
+                <th className="p-2 border">Amount</th>
+                <th className="p-2 border">Status</th>
+                <th className="p-2 border">Receipt</th>
+                {/* <th className="p-2 border">Date</th> */}
+                <th className="p-2 text-center border">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {paginated.map((txn) => (
+                <tr key={txn.id} className="text-xs hover:bg-gray-50 sm:text-sm">
+                  <td className="p-2 border">{txn.customerName}</td>
+                  <td className="p-2 break-all border">{txn.email}</td>
+                  <td className="p-2 border">₹{txn.amount}</td>
+                  <td className="p-2 border">{txn.status}</td>
+                  <td className="p-2 break-all border">{txn.receipt}</td>
+                  {/* <td className="p-2 border">{txn.createdAt}</td> */}
+                  <td className="p-2 text-center border">
+                    <button
+                      onClick={() => setSelectedTxn(txn)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <Eye size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Modal */}
       {selectedTxn && (
-        <div className="fixed inset-0 flex items-center justify-center bg-green-200 bg-opacity-40 z-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-green-200 bg-opacity-40">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 relative">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b pb-4 mb-4">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b">
               <h3 className="text-xl font-semibold text-gray-800">
                 🧾 Payment Details
               </h3>
               <button
                 onClick={() => setSelectedTxn(null)}
-                className="text-2xl text-gray-500 hover:text-red-500 font-bold"
+                className="text-2xl font-bold text-gray-500 hover:text-red-500"
               >
                 &times;
               </button>
             </div>
 
-            {/* Detail Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
+            <div className="grid grid-cols-1 gap-4 text-sm text-gray-700 sm:grid-cols-2">
               <div>
                 <span className="font-medium">👤 Name:</span>
                 <p className="text-gray-900">{selectedTxn.customerName}</p>
@@ -147,7 +160,7 @@ const CustomerTransactions = () => {
               </div>
               <div>
                 <span className="font-medium">💰 Amount:</span>
-                <p className="text-green-700 font-semibold">₹{selectedTxn.amount}</p>
+                <p className="font-semibold text-green-700">₹{selectedTxn.amount}</p>
               </div>
               <div>
                 <span className="font-medium">📦 Status:</span>
@@ -163,29 +176,28 @@ const CustomerTransactions = () => {
               </div>
               <div>
                 <span className="font-medium">🧾 Receipt ID:</span>
-                <p className="break-all text-gray-900">{selectedTxn.receipt}</p>
+                <p className="text-gray-900 break-all">{selectedTxn.receipt}</p>
               </div>
               <div>
                 <span className="font-medium">🆔 Razorpay Order:</span>
-                <p className="break-all text-gray-900">{selectedTxn.razorpayOrderId}</p>
+                <p className="text-gray-900 break-all">{selectedTxn.razorpayOrderId}</p>
               </div>
               <div>
                 <span className="font-medium">🆔 Payment ID:</span>
-                <p className="break-all text-gray-900">{selectedTxn.razorpayPaymentId}</p>
+                <p className="text-gray-900 break-all">{selectedTxn.razorpayPaymentId}</p>
               </div>
               <div className="sm:col-span-2">
                 <span className="font-medium">🔐 Signature:</span>
-                <p className="break-all text-gray-900">
+                <p className="text-gray-900 break-all">
                   {selectedTxn.razorpaySignature}
                 </p>
               </div>
             </div>
 
-            {/* Close Button */}
-            <div className="mt-6 flex justify-end">
+            <div className="flex justify-end mt-6">
               <button
                 onClick={() => setSelectedTxn(null)}
-                className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className="px-5 py-2 text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 Close
               </button>

@@ -3,7 +3,8 @@ import Google from "../images/google.png";
 import FarmerImage from "../images/Registration.jpg";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
-import Logo from "../images/logo.png";
+// import Logo from "../images/logo.png";
+import Navbar from "../components/Navbar";
 
 import { motion } from "framer-motion";
 
@@ -18,6 +19,7 @@ const Register = () => {
   const [address, setAddress] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
 
 
   const handleSubmit = async (e) => {
@@ -44,7 +46,8 @@ const Register = () => {
     };
 
     try {
-      setLoading(true)
+      
+      setRegisterLoading(true)
       const response = await fetch(import.meta.env.VITE_BACKEND_URL+"/auth/register", {
         method: "POST",
         headers: {
@@ -62,11 +65,12 @@ const Register = () => {
          localStorage.setItem("userId", data.id);
         localStorage.setItem("token", data.token);
         
-         const redirectPath = localStorage.getItem("redirectAfterLogin") || "/";
+         const redirectPath = localStorage.getItem("redirectAfterLogin") || "/products";
   localStorage.removeItem("redirectAfterLogin");
    
   navigate(redirectPath,{replace:true});
-  window.location.reload();
+  // window.location.reload();
+  <Navbar/>
        
         console.log(data.role)
       navigate("/");
@@ -83,13 +87,14 @@ const Register = () => {
     } catch (err) {
       setError("Error connecting to server."+{err});
     } finally{
-      setLoading(false)
+      
+      setRegisterLoading(false);
     }
   };
      const handleGoogleLogin = () => {
-  // Store redirect path before navigating away
-  const currentPath = location.pathname;
-  localStorage.setItem("redirectAfterLogin", currentPath);
+  // // Store redirect path before navigating away
+  // const currentPath = location.pathname;
+  // localStorage.setItem("redirectAfterLogin", currentPath);
 
   // Show spinner immediately (for a short moment)
   setLoading(true);
@@ -104,47 +109,35 @@ const Register = () => {
   return (
 
     
-       <div className="min-h-screen bg-gradient-to-br from-green-100 via-green-50 to-green-200 flex items-center justify-center px-4">
+       <div className="flex items-center justify-center min-h-screen px-4 bg-gradient-to-br from-green-100 via-green-50 to-green-200">
       <Toaster position="top-center" />
-       {loading ? (
-            // 👇 Loading Logo (No Animation)
-      <div className="flex flex-col items-center justify-center h-full">
-        <img
-          src={Logo} // ✅ Use your actual logo import or path
-          alt="Loading..."
-          className="w-24 h-24"
-        />
-        <p className="mt-4 text-green-700 font-semibold">Logging in...</p>
-      </div>
-      
-          ) : (
-             <motion.div
-      className="flex justify-center items-center min-h-screen bg-gray-100"
+               <motion.div
+      className="flex items-center justify-center min-h-screen bg-gray-100"
       initial={{ opacity: 0, y: -50 }}   // Start invisible and slightly up
       animate={{ opacity: 1, y: 0 }}    // Fade in + slide down
       exit={{ opacity: 0, y: 50 }}      // Fade out + slide down on exit
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
 
-        <div className="flex flex-col lg:flex-row bg-white shadow-xl rounded-2xl overflow-hidden max-w-4xl w-full">
+        <div className="flex flex-col w-full max-w-4xl overflow-hidden bg-white shadow-xl lg:flex-row rounded-2xl">
 
         <div className="hidden lg:block lg:w-1/2">
-          <img src={FarmerImage} alt="Farmer" className="w-full h-full object-cover" />
+          <img    loading="lazy" src={FarmerImage} alt="Farmer" className="object-cover w-full h-full" />
         </div>
 
-        <div className="w-full lg:w-1/2 p-8 sm:p-10">
-          <h1 className="text-3xl font-bold text-green-700 text-center mb-2">Sakshi Nursery</h1>
-          <p className="text-center text-gray-600 mb-6 text-sm">
+        <div className="w-full p-8 lg:w-1/2 sm:p-10">
+          <h1 className="mb-2 text-3xl font-bold text-center text-green-700">Sakshi Nursery</h1>
+          <p className="mb-6 text-sm text-center text-gray-600">
             Create your account and start your nursery journey!
           </p>
 
-          {error && <p className="text-red-600 text-center mb-3 text-sm">{error}</p>}
+          {error && <p className="mb-3 text-sm text-center text-red-600">{error}</p>}
 
          <button
                onClick={handleGoogleLogin}
-               className="w-full flex items-center justify-center border border-gray-300 py-2 px-3 rounded-md hover:border-green-500 transition mb-4 text-sm"
+               className="flex items-center justify-center w-full px-3 py-2 mb-4 text-sm transition border border-gray-300 rounded-md hover:border-green-500"
              >
-               <img src={Google} alt="Google" className="w-5 h-5 mr-2" />
+               <img    loading="lazy" src={Google} alt="Google" className="w-5 h-5 mr-2" />
                Sign in with Google
              </button>
 
@@ -154,7 +147,7 @@ const Register = () => {
               <input
                 type="text"
                 id="fullName"
-                className="w-full p-2 mt-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full p-2 mt-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
                 placeholder="Your full name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -166,7 +159,7 @@ const Register = () => {
               <input
                 type="email"
                 id="email"
-                className="w-full p-2 mt-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full p-2 mt-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -178,7 +171,7 @@ const Register = () => {
               <input
                 type="text"
                 id="phoneNumber"
-                className="w-full p-2 mt-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full p-2 mt-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
                 placeholder="9876543210"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
@@ -190,7 +183,7 @@ const Register = () => {
               <input
                 type="text"
                 id="address"
-                className="w-full p-2 mt-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full p-2 mt-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
                 placeholder="Your address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -202,7 +195,7 @@ const Register = () => {
               <input
                 type="password"
                 id="password"
-                className="w-full p-2 mt-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full p-2 mt-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
                 placeholder="Create a password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -214,7 +207,7 @@ const Register = () => {
               <input
                 type="password"
                 id="confirmPassword"
-                className="w-full p-2 mt-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full p-2 mt-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
                 placeholder="Re-enter password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -222,21 +215,46 @@ const Register = () => {
             </div>
 
             <button
-              type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm transition"
-            >
-              Register
-            </button>
+        type="submit"
+        disabled={registerLoading}
+        className={`w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm ${
+          loading ? "cursor-not-allowed opacity-70" : ""
+        }`}
+      >
+        {registerLoading ? (
+          <svg
+            className="w-5 h-5 text-white animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+        ) : (
+          "Register"
+        )}
+      </button>
           </form>
 
-          <div className="text-center mt-4 text-sm">
+          <div className="mt-4 text-sm text-center">
             Already have an account?{" "}
             <a href="/login" className="text-green-600 hover:underline">Login</a>
           </div>
         </div>
       </div>
  </motion.div>
-      )}
     </div>
    
    

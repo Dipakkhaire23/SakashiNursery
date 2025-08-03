@@ -15,16 +15,18 @@ const founder = {
 };
 
 const teamMembers = [
-  {
-    role: 'Plant Care Specialist',
-    image: worker1,
-    description: 'Ensures the plants are healthy and well-maintained throughout the day.',
-  },
-  {
-    role: 'Packaging & Dispatch',
-    image: worker2,
-    description: 'Responsible for safe packaging and timely dispatch of plant orders.',
-  },
+ {
+  role: 'Plant Care & Delivery Specialist',
+  image: worker1,
+  description: 'Responsible for preparing plants for delivery by maintaining them through spraying, drenching, and regular monitoring. Also assists with plant loading for dispatch.',
+}
+,
+ {
+  role: 'Sowing and Sorting',
+  image: worker2,
+  description: 'Responsible for sowing seeds according to orders and sorting plants to ensure they are best prepared for delivery.',
+}
+
 ];
 
 const Team = () => {
@@ -35,23 +37,23 @@ const Team = () => {
       });
     }, []);
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-center text-green-800 mb-10">Our Team</h1>
+    <div className="max-w-6xl px-4 py-12 mx-auto">
+      <h1 className="mb-10 text-3xl font-bold text-center text-green-800">Our Team</h1>
 
       {/* Founder Card Centered */}
       <div className="flex justify-center mb-12">
         <div
           data-aos="fade-up"
            
-        className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition duration-300 max-w-sm">
+        className="max-w-sm p-6 text-center transition duration-300 bg-white rounded-lg shadow-lg hover:shadow-xl">
           <img
             src={founder.image}
             alt={founder.name}
-            className="w-32 h-32 mx-auto rounded-full object-cover mb-4 border-4 border-green-700"
+            className="object-cover w-32 h-32 mx-auto mb-4 border-4 border-green-700 rounded-full"
           />
           <h3 className="text-xl font-semibold text-green-700">{founder.name}</h3>
-          <p className="text-sm text-gray-500 mb-2">{founder.role}</p>
-          <p className="text-gray-600 text-sm">{founder.description}</p>
+          <p className="mb-2 text-sm text-gray-500">{founder.role}</p>
+          <p className="text-sm text-gray-600">{founder.description}</p>
         </div>
       </div>
 
@@ -67,10 +69,10 @@ const Team = () => {
             <img
               src={member.image}
               alt={member.name}
-              className="w-full h-72 object-cover rounded-md mb-4 border-4 border-green-700"
+              className="object-cover w-full mb-4 border-4 border-green-700 rounded-md h-72"
             />
             <h3 className="text-lg font-semibold text-green-700">{member.role}</h3>
-            <p className="text-gray-600 text-sm">{member.description}</p>
+            <p className="text-sm text-gray-600">{member.description}</p>
           </div>
         ))}
       </div>

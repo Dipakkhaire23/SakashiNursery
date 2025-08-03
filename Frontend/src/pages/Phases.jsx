@@ -56,22 +56,22 @@ const Phases = () => {
 
 
   return (
-   <div className="max-w-8xl mx-auto px-8 py-12 mb-7 mt-4">
+   <div className="px-8 py-12 mx-auto mt-4 max-w-8xl mb-7 ">
      <Toaster position="top-center" />
-      <h1 className="text-3xl font-bold text-center text-green-800 mb-10">
+      <h1 className="mb-10 text-3xl font-bold text-center text-green-800">
         Our Service Phases
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
         {phaseData.map((phase, index) => (
           <Link to={phase.path} key={index}>
             <div
               data-aos="fade-up"
               data-aos-delay={index * 100}
-              className="w-64 h-26 bg-white rounded-xl shadow-md p-5 border-l-4 border-green-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 ease-in-out flex flex-col justify-between"
+              className="flex flex-col justify-between w-64 p-5 transition-all duration-300 ease-in-out bg-white border-l-4 border-green-600 shadow-md h-26 rounded-xl hover:shadow-2xl hover:scale-105"
             >
-              <h2 className="text-lg font-semibold text-green-700 mb-1">{phase.title}</h2>
-              <p className="text-gray-700 text-sm text-justify">{phase.description}</p>
+              <h2 className="mb-1 text-lg font-semibold text-green-700">{phase.title}</h2>
+              <p className="text-sm text-justify text-gray-700">{phase.description}</p>
             </div>
           </Link>
         ))}
