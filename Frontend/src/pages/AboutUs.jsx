@@ -172,9 +172,9 @@ const AboutUs = () => {
       </section>
       <Team/>
       <h2 className="flex justify-center font-bold"> Devloped By</h2>
-    <div className="flex justify-center gap-16 px-4 py-2 overflow-x-auto whitespace-nowrap scroll-marquee">
+    <div className="flex flex-col justify-center gap-4 px-4 py-2 overflow-x-auto sm:flex-row sm:gap-16 sm:overflow-visible whitespace-nowrap sm:whitespace-normal">
   {/* Member 1 */}
-  <div className="flex items-center space-x-4 min-w-max">
+  <div className="flex items-center space-x-4 min-w-max sm:min-w-0">
     <img
       src={dipak}
       alt="Dipak Khaire"
@@ -184,7 +184,7 @@ const AboutUs = () => {
   </div>
 
   {/* Member 2 */}
-  <div className="flex items-center space-x-4 min-w-max">
+  <div className="flex items-center space-x-4 min-w-max sm:min-w-0">
     <img
       src={ashwini}
       alt="Ashwini Salunke"
@@ -194,7 +194,7 @@ const AboutUs = () => {
   </div>
 
   {/* Member 3 */}
-  <div className="flex items-center space-x-4 min-w-max">
+  <div className="flex items-center space-x-4 min-w-max sm:min-w-0">
     <img
       src={atharv}
       alt="Atharv Kamerkar"
@@ -203,6 +203,7 @@ const AboutUs = () => {
     <p className="text-sm font-semibold text-black">Atharv Kamerkar</p>
   </div>
 </div>
+
 
     </div>
   );
