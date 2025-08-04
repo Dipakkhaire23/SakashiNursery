@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import { FaStar } from "react-icons/fa";
+import { LoaderCircle } from "lucide-react";
 // import { useLocation } from "react-router-dom";
+// import Navbar from "../../components/Navbar";
 
-const Cucumber = () => {
+
+const Cucumber = ({setCartItemCoun}) => {
   //  const location = useLocation();
   const categoryName = "Cucumber";
 
@@ -72,34 +75,45 @@ const Cucumber = () => {
       productReviews.length
     : 0;
 
-  const handleAddToCart = async (productId) => {
-    const quantity = quantities[productId] || 1001;
-    try {
-      setIsProcessing(true);
-      const response = await axios.post(
-        import.meta.env.VITE_BACKEND_URL + "/api/carts/AddToCart",
-        { productId, quantity },
+ const handleAddToCart = async (productId) => {
+  const quantity = quantities[productId] || 1001;
+  try {
+    setIsProcessing(true);
+    const response = await axios.post(
+      import.meta.env.VITE_BACKEND_URL + "/api/carts/AddToCart",
+      { productId, quantity },
+      { withCredentials: true }
+    );
+
+    const msg = response.data?.message || response.data;
+    if (msg === "Added") {
+      toast.success("Product added to cart");
+      setAddedToCart((prev) => new Set(prev).add(productId));
+
+      // 🟢 Option 1: Re-fetch cart count (recommended)
+      const cartResponse = await axios.get(
+        import.meta.env.VITE_BACKEND_URL + "/api/carts/CartItemCount",
         { withCredentials: true }
       );
+      setCartItemCoun(cartResponse.data);
+      console.log(cartResponse.data)
 
-      const msg = response.data?.message || response.data;
-      if (msg === "Added") {
-        toast.success("Product added to cart");
-        window.location.reload();
-        setAddedToCart((prev) => new Set(prev).add(productId));
-      } else if (msg === "Already added") {
-        toast("Already in cart", { icon: "ℹ️" });
-        setAlreadyInCart((prev) => new Set(prev).add(productId));
-      } else {
-        toast.error("Unexpected response");
-      }
-    } catch (error) {
-      console.error("Add to cart error:", error);
-      toast.error("Failed to add to cart");
-    } finally {
-      setIsProcessing(false);
+      // 🟢 Option 2: Manually increment if backend logic is simple
+      // setCartItemCount((prev) => prev + 1);
+    } else if (msg === "Already added") {
+      toast("Already in cart", { icon: "ℹ️" });
+      setAlreadyInCart((prev) => new Set(prev).add(productId));
+    } else {
+      toast.error("Unexpected response");
     }
-  };
+  } catch (error) {
+    console.error("Add to cart error:", error);
+    toast.error("Failed to add to cart");
+  } finally {
+    setIsProcessing(false);
+  }
+};
+
 
   const fetchProductsByCategory = async (searchTerm = "") => {
     try {
@@ -164,7 +178,7 @@ const Cucumber = () => {
 
   return (
   <main className="min-h-screen p-6 bg-green-50">
-    <Toaster position="top-right" />
+    <Toaster position="top-left" />
     <h1 className="mb-4 text-3xl font-bold text-center text-green-800">
       {categoryName} Plants
     </h1>
@@ -388,9 +402,10 @@ const Cucumber = () => {
 
             {showDiscount && (
               <div className="p-4 mt-4 bg-gray-100 border border-green-300 rounded">
-                <p>1️⃣ Book online and get a 25% discount.</p>
-                <p>2️⃣ If you Booked in Qantity(10,000) you Will Get Free Delivery.</p>
-              </div>
+  <p>1️⃣ Book online and get a 25% discount.</p>
+  <p>2️⃣ Order in bulk (10,000 Plants) and enjoy free delivery.</p>
+</div>
+
             )}
 
             {/* Rating & Review */}
@@ -483,9 +498,10 @@ const Cucumber = () => {
         </article>
       </section>
     ) : loading ? (
-      <div className="flex justify-center items-center min-h-[200px]">
-        <div className="w-12 h-12 border-4 border-green-500 border-dashed rounded-full animate-spin"></div>
-      </div>
+    <div className="flex items-center justify-center py-10">
+          <LoaderCircle className="w-6 h-6 text-blue-500 animate-spin" />
+          <span className="ml-3 text-gray-600">Loading Plants...</span>
+        </div>
     ) : products.length === 0 ? (
       <p className="mt-10 text-lg text-center text-gray-600">
         No products available in this category.
@@ -510,24 +526,38 @@ const Cucumber = () => {
               />
               <p className="mb-3 text-gray-700">{p.description}</p>
             </div>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-lg font-semibold text-green-800">₹{p.price}</p>
-              <div className="flex items-center gap-2">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <FaStar
-                    key={i}
-                    color={
-                      i < Math.round(p.averageRating || 0)
-                        ? "#16a34a"
-                        : "#d1d5db"
-                    }
-                  />
-                ))}
-                <span className="ml-1 text-sm text-gray-600">
-                  ({Math.round(p.averageRating || 0)})
-                </span>
-              </div>
-            </div>
+            <div className="flex flex-col gap-2 mb-2 sm:flex-row sm:items-center sm:justify-between">
+  {/* Price and Status Section */}
+  <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
+    <p className="text-lg font-semibold text-green-800">₹{p.price}</p> <br />
+    
+  </div>
+  
+  {/* Rating Section */}
+  <div className="flex items-center gap-1">
+    {Array.from({ length: 5 }, (_, i) => (
+      <FaStar
+        key={i}
+        size={16}
+        color={i < Math.round(p.averageRating || 0) ? "#16a34a" : "#d1d5db"}
+      />
+    ))}
+    <span className="ml-1 text-sm text-gray-600">
+      ({Math.round(p.averageRating || 0)})
+    </span>
+  </div>
+  
+
+</div>
+<p
+  className={`text-lg font-semibold ${
+    p.status === "AVAILABLE" ? "text-green-800" : "text-red-600"
+  }`}
+>
+  Status: {p.status}
+</p>
+
+
             <button
               onClick={() => setSelectedProduct(p)}
               className="px-4 py-2 text-gray-800 bg-green-600 rounded-md hover:bg-yellow-600 "

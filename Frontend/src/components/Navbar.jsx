@@ -112,7 +112,7 @@ const Navbar = ({ cartItemCoun }) => {
           : 'hover:text-yellow-300'
       }
     >
-      Products
+      Plants
     </NavLink>
     {/* Add more authenticated links here */}
   </>
@@ -438,7 +438,7 @@ const Navbar = ({ cartItemCoun }) => {
           : 'hover:text-yellow-300'
       }
     >
-      Products
+      Plants
     </NavLink>
     
 

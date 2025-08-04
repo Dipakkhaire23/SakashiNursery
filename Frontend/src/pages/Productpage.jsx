@@ -80,26 +80,27 @@ const ProductPage = () => {
         </div>
       ) :(
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredCrops.map((crop, index) => (
-          <div
-            key={index}
-            data-aos="fade-up"
-            data-aos-delay={index * 100}
-            onClick={() => navigate(`/vegetable/${crop.name.toLowerCase().replace(/\s+/g, '-')}`)}
-            className="p-4 transition-shadow duration-300 border border-orange-200 rounded-md shadow-sm cursor-pointer hover:shadow-md"
-          >
-            <h3 className="mb-2 text-lg font-semibold text-green-700">{crop.name}</h3>
-            <div className="flex flex-wrap gap-2">
-              {crop.images.map((img, idx) => (
-                <img key={idx} src={img} alt={crop.name} className="object-cover w-full h-40 rounded" />
-              ))}
-            </div>
-            {/* <p className="mt-2 text-sm text-gray-600"><strong>Verity Name: </strong>{crop.scientific}</p> */}
-            <p className="text-sm"><strong>Price: ₹</strong> {crop.price}</p>
-          </div>
+       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+  {filteredCrops.map((crop, index) => (
+    <div
+      key={index}
+      data-aos="fade-up"
+      data-aos-delay={index * 100}
+      onClick={() => navigate(`/vegetable/${crop.name.toLowerCase().replace(/\s+/g, '-')}`)}
+      className="p-4 m-4 transition-shadow duration-300 border border-orange-200 rounded-md shadow-sm cursor-pointer hover:shadow-md"
+    >
+      <h3 className="mb-2 text-lg font-semibold text-center text-green-700">{crop.name}</h3>
+      <div className="flex flex-wrap gap-2">
+        {crop.images.map((img, idx) => (
+          <img key={idx} src={img} alt={crop.name} className="object-cover w-full h-40 rounded" />
         ))}
       </div>
+    <p className="text-sm font-bold text-center"><strong>Price: ₹</strong> {crop.price}</p>
+
+    </div>
+  ))}
+</div>
+
       )}
       
     </div>

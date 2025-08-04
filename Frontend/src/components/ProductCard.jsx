@@ -6,6 +6,7 @@ import chilli  from "../images/chilli.jpg"
 import aryman  from "../images/aryaman.jpg"
 import veer  from "../images/Slidebar_4.jpg"
 import watermeloan  from "../images/watermeloan.jpg"
+import { useNavigate } from "react-router-dom";
 
 const products = [
   {
@@ -104,6 +105,7 @@ const products = [
 जुलै ते नोव्हेंबर व डिसेंबर ते फेब्रुवारी या कालावधीत लागवड करणे अधिक फायदेशीर.`,
     wiki: 'https://en.wikipedia.org/wiki/Tomato',
     image:aryman,
+  
   },
 ];
 
@@ -117,6 +119,8 @@ const ProductCard = () => {
       once: true,
     });
   }, []);
+  const isAuthenticated=localStorage.getItem("token")
+    const navigate = useNavigate();
 
   // const handleAddToWishlist = (product) => {
   //   const isWishlisted = wishlist.includes(product.id);
@@ -130,78 +134,98 @@ const ProductCard = () => {
   // };
 
   return (
-    <div className="p-6 bg-green-50">
-      {/* <Toaster position="top-right" reverseOrder={false} /> */}
-      <h2 className="text-3xl font-bold text-center text-green-700 mb-8">
-        Top selling Plants
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {products.map((product, index) => (
-          <div
-            key={product.id}
-            data-aos="fade-up"
-            data-aos-delay={index * 100}
-            className="bg-white shadow-md rounded-xl p-4 hover:shadow-lg transition-shadow relative"
+   <div className="p-6 bg-green-50">
+  <h2 className="mb-8 text-3xl font-bold text-center text-green-700">
+    Top selling Plants
+  </h2>
+
+  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
+    {products.map((product, index) => (
+      <div
+        key={product.id}
+        data-aos="fade-up"
+        data-aos-delay={index * 100}
+        className="relative p-4 transition-shadow bg-white shadow-md rounded-xl hover:shadow-lg"
+      >
+        {/* ✅ Image click navigates to login if unauthenticated */}
+        <img
+          src={product.image}
+          alt={product.name}
+          onClick={() => {
+            const path = `/vegetable/${product.category}`;
+            if (!isAuthenticated) {
+              localStorage.setItem("redirectAfterLogin", path);
+              navigate("/login");
+            } else {
+              navigate(path);
+            }
+          }}
+          className="object-cover w-full h-40 mb-2 rounded cursor-pointer"
+        />
+
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xl font-semibold text-green-700">{product.name}</h3>
+          <p className="text-lg font-bold text-green-600">₹{product.price}</p>
+        </div>
+
+        {/* ✅ View Details shows modal only if authenticated */}
+        <div className="mt-4">
+          <button
+            onClick={() => {
+              // if (!isAuthenticated) {
+              //   localStorage.setItem("redirectAfterLogin", `/vegetable/${product.category}`);
+              //   navigate("/login");
+              // } else {
+                
+              // }
+              setSelectedPlant(product); // Only open modal
+            }}
+            className="w-full px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
           >
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-40 object-cover rounded mb-2"
-            />
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-xl font-semibold text-green-700">{product.name}</h3>
-              <p className="text-lg font-bold text-green-600">{product.price}</p>
-            </div>
-            <div className="mt-4">
-              <button
-                onClick={() => setSelectedPlant(product)}
-                className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        ))}
+            View Details
+          </button>
+        </div>
       </div>
-
-      {selectedPlant && (
-  <div className="fixed inset-0 z-50 bg-white flex items-center justify-center w-screen h-screen overflow-auto">
-    <div className="relative w-screen h-screen p-6 pt-16 flex flex-col items-center justify-start">
-      <button
-        className="absolute top-4 right-6 text-4xl font-bold text-gray-700 hover:text-red-600 transition-colors"
-        onClick={() => setSelectedPlant(null)}
-      >
-        ×
-      </button>
-
-      <img
-        src={selectedPlant.image}
-        alt={selectedPlant.name}
-        className="w-11/12 max-w-xl h-64 object-cover rounded mb-6"
-      />
-
-      <h2 className="text-3xl font-bold text-green-700 mb-2">{selectedPlant.name}</h2>
-      <p className="text-base text-gray-700 mb-2 text-center px-4">{selectedPlant.description}</p>
-      <p className="text-xl font-semibold text-green-600 mb-1">Price: ₹{selectedPlant.price}</p>
-      {/* <p className="text-sm text-gray-600 mb-1">Stock: {selectedPlant.stock}</p> */}
-      <p className="text-sm text-gray-600 mb-4">
-        Category: <span className="font-medium">{selectedPlant.category}</span>
-      </p>
-
-      <a
-        href={selectedPlant.wiki}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 underline hover:text-blue-800 text-sm"
-      >
-        View on Wikipedia
-      </a>
-    </div>
+    ))}
   </div>
-)}
 
+  {/* ✅ Modal */}
+  {selectedPlant && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center w-screen h-screen overflow-auto bg-white">
+      <div className="relative flex flex-col items-center justify-start w-screen h-screen p-6 pt-16">
+        <button
+          className="absolute text-4xl font-bold text-gray-700 transition-colors top-4 right-6 hover:text-red-600"
+          onClick={() => setSelectedPlant(null)}
+        >
+          ×
+        </button>
 
+        <img
+          src={selectedPlant.image}
+          alt={selectedPlant.name}
+          className="object-cover w-11/12 h-64 max-w-xl mb-6 rounded"
+        />
+
+        <h2 className="mb-2 text-3xl font-bold text-green-700">{selectedPlant.name}</h2>
+        <p className="px-4 mb-2 text-base text-center text-gray-700">{selectedPlant.description}</p>
+        <p className="mb-1 text-xl font-semibold text-green-600">Price: ₹{selectedPlant.price}</p>
+        <p className="mb-4 text-sm text-gray-600">
+          Category: <span className="font-medium">{selectedPlant.category}</span>
+        </p>
+
+        <a
+          href={selectedPlant.wiki}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-blue-600 underline hover:text-blue-800"
+        >
+          View on Wikipedia
+        </a>
+      </div>
     </div>
+  )}
+</div>
+
   );
 };
 

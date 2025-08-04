@@ -122,14 +122,20 @@ setLoading(false)
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    setProfile((prev) => ({
-      ...prev,
-      image: URL.createObjectURL(file),
-    }));
-  };
+ const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file.size > 2 * 1024 * 1024) { // 2MB limit
+    toast.error("File size must be less than 2MB");
+    return;
+  }
+
+  setSelectedFile(file);
+  setProfile((prev) => ({
+    ...prev,
+    image: URL.createObjectURL(file),
+  }));
+};
+
 
   const handleSubmit = async () => {
     const formData = new FormData();

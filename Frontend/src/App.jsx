@@ -324,22 +324,22 @@ const App = () => {
           <Route path="/congratulations" element={<Congratulations />} />
 
           {/* Veg */}
-          <Route path="/vegetable/cauliflower" element={<Cauliflower />} />
-          <Route path="/vegetable/papaya" element={<Papaya />} />
-          <Route path="/vegetable/brinjal" element={<Brinjal />} />
-          <Route path="/vegetable/lady-finger" element={<LadyFinger />} />
-          <Route path="/vegetable/cabbage" element={<Cabbage />} />
-          <Route path="/vegetable/bottle-gourd" element={<BottleGourd />} />
-          <Route path="/vegetable/bitter-gourd" element={<BitterGourd />} />
+          <Route path="/vegetable/cauliflower" element={<Cauliflower  setCartItemCoun={setCartItemCoun}/>} />
+          <Route path="/vegetable/papaya" element={<Papaya  setCartItemCoun={setCartItemCoun}/>} />
+          <Route path="/vegetable/brinjal" element={<Brinjal setCartItemCoun={setCartItemCoun} />} />
+          <Route path="/vegetable/lady-finger" element={<LadyFinger setCartItemCoun={setCartItemCoun}/>} />
+          <Route path="/vegetable/cabbage" element={<Cabbage setCartItemCoun={setCartItemCoun} />} />
+          <Route path="/vegetable/bottle-gourd" element={<BottleGourd  setCartItemCoun={setCartItemCoun}/>} />
+          <Route path="/vegetable/bitter-gourd" element={<BitterGourd  setCartItemCoun={setCartItemCoun}/>} />
           <Route path="/vegetable/tomato" element={<Tomato setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/chilli" element={<Chilli />} />
-          <Route path="/vegetable/capsicum" element={<Capsicum />} />
-          <Route path="/vegetable/watermelon" element={<Watermelon />} />
-          <Route path="/vegetable/muskmelon" element={<Muskmelon />} />
-          <Route path="/vegetable/cucumber" element={<Cucumber />} />
-          <Route path="/vegetable/small-cucumber" element={<SmallCucumber />} />
-          <Route path="/vegetable/drumstick" element={<Drumstick />} />
-          <Route path="/vegetable/merigold" element={<Merigold />} />
+          <Route path="/vegetable/chilli" element={<Chilli setCartItemCoun={setCartItemCoun} />} />
+          <Route path="/vegetable/capsicum" element={<Capsicum  setCartItemCoun={setCartItemCoun}/>} />
+          <Route path="/vegetable/watermelon" element={<Watermelon  setCartItemCoun={setCartItemCoun}/>} />
+          <Route path="/vegetable/muskmelon" element={<Muskmelon setCartItemCoun={setCartItemCoun}/>} />
+          <Route path="/vegetable/cucumber" element={<Cucumber setCartItemCoun={setCartItemCoun} />} />
+          <Route path="/vegetable/small-cucumber" element={<SmallCucumber setCartItemCoun={setCartItemCoun}/>} />
+          <Route path="/vegetable/drumstick" element={<Drumstick setCartItemCoun={setCartItemCoun} />} />
+          <Route path="/vegetable/merigold" element={<Merigold  setCartItemCoun={setCartItemCoun}/>} />
 
           {/* Phases */}
           <Route path="/phases/booking" element={<BookingPhase />} />
