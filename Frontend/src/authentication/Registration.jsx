@@ -1,15 +1,15 @@
 import  { useState } from "react";
 import Google from "../images/google.png";
-import FarmerImage from "../images/Registration.jpg";
+// import FarmerImage from "../images/Registration.jpg";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 // import Logo from "../images/logo.png";
-import Navbar from "../components/Navbar";
+// import Navbar from "../components/Navbar";
 
 import { motion } from "framer-motion";
 
 // eslint-disable-next-line react/prop-types
-const Register = () => {
+const Register = ({ setAuthenticated, setUserRole }) => {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -65,21 +65,13 @@ const Register = () => {
          localStorage.setItem("userId", data.id);
         localStorage.setItem("token", data.token);
         
-         const redirectPath = localStorage.getItem("redirectAfterLogin") || "/products";
-  localStorage.removeItem("redirectAfterLogin");
+          setAuthenticated(true); // 🔁 Update state here
+  setUserRole(data.role); // 🔁 Update role here
+   toast.success("Welcome to Sakshi Nursery " + data.name);
+    const redirectPath = localStorage.getItem("redirectAfterLogin") || "/products";
+    localStorage.removeItem("redirectAfterLogin");
+    navigate(redirectPath, { replace: true });
    
-  navigate(redirectPath,{replace:true});
-  // window.location.reload();
-  <Navbar/>
-       
-        console.log(data.role)
-      navigate("/");
-        setFullName("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        setPhoneNumber("");
-        setAddress("");
       } else {
         const resData = await response.json();
         setError(resData.message || "Registration failed.");
@@ -91,10 +83,9 @@ const Register = () => {
       setRegisterLoading(false);
     }
   };
+  
      const handleGoogleLogin = () => {
-  // // Store redirect path before navigating away
-  // const currentPath = location.pathname;
-  // localStorage.setItem("redirectAfterLogin", currentPath);
+  
 
   // Show spinner immediately (for a short moment)
   setLoading(true);
@@ -107,43 +98,54 @@ const Register = () => {
 };
 
   return (
+  <div className="flex items-center justify-center min-h-screen px-4 bg-gradient-to-br from-green-100 via-green-50 to-green-200">
+    <Toaster position="top-center" />
+      {loading ? (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-60">
+  <div className="z-10 flex flex-col items-center justify-center gap-4">
+    {/* Name above loader */}
+    <p className="text-lg font-bold text-green-700">SAKSHI HITECH NURSERY</p>
 
+    {/* Circular loader */}
+    <div className="w-12 h-12 border-4 border-green-500 rounded-full border-t-transparent animate-spin"></div>
+  </div>
+</div>
+
+
+
+      ) : (
     
-       <div className="flex items-center justify-center min-h-screen px-4 bg-gradient-to-br from-green-100 via-green-50 to-green-200">
-      <Toaster position="top-center" />
-               <motion.div
+    <motion.div
       className="flex items-center justify-center min-h-screen bg-gray-100"
-      initial={{ opacity: 0, y: -50 }}   // Start invisible and slightly up
-      animate={{ opacity: 1, y: 0 }}    // Fade in + slide down
-      exit={{ opacity: 0, y: 50 }}      // Fade out + slide down on exit
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 50 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-
-        <div className="flex flex-col w-full max-w-4xl overflow-hidden bg-white shadow-xl lg:flex-row rounded-2xl">
-
-        <div className="hidden lg:block lg:w-1/2">
-          <img    loading="lazy" src={FarmerImage} alt="Farmer" className="object-cover w-full h-full" />
-        </div>
-
-        <div className="w-full p-8 lg:w-1/2 sm:p-10">
+      <div className="flex flex-col w-full max-w-4xl overflow-hidden bg-white shadow-xl rounded-2xl">
+        <div className="w-full p-8 sm:p-10">
           <h1 className="mb-2 text-3xl font-bold text-center text-green-700">Sakshi Nursery</h1>
           <p className="mb-6 text-sm text-center text-gray-600">
             Create your account and start your nursery journey!
           </p>
 
-          {error && <p className="mb-3 text-sm text-center text-red-600">{error}</p>}
+          {error && (
+            <p className="mb-3 text-sm text-center text-red-600">{error}</p>
+          )}
 
-         <button
-               onClick={handleGoogleLogin}
-               className="flex items-center justify-center w-full px-3 py-2 mb-4 text-sm transition border border-gray-300 rounded-md hover:border-green-500"
-             >
-               <img    loading="lazy" src={Google} alt="Google" className="w-5 h-5 mr-2" />
-               Sign in with Google
-             </button>
+          <button
+            onClick={handleGoogleLogin}
+            className="flex items-center justify-center w-full px-3 py-2 mb-4 text-sm transition border border-gray-300 rounded-md hover:border-green-500"
+          >
+            <img src={Google} alt="Google" className="w-5 h-5 mr-2" />
+            Sign in with Google
+          </button>
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name</label>
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+                Full Name
+              </label>
               <input
                 type="text"
                 id="fullName"
@@ -155,7 +157,9 @@ const Register = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email Address
+              </label>
               <input
                 type="email"
                 id="email"
@@ -167,7 +171,9 @@ const Register = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Phone Number</label>
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
               <input
                 type="text"
                 id="phoneNumber"
@@ -179,7 +185,9 @@ const Register = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                Address
+              </label>
               <input
                 type="text"
                 id="address"
@@ -191,7 +199,9 @@ const Register = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
               <input
                 type="password"
                 id="password"
@@ -203,7 +213,9 @@ const Register = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
               <input
                 type="password"
                 id="confirmPassword"
@@ -215,37 +227,37 @@ const Register = () => {
             </div>
 
             <button
-        type="submit"
-        disabled={registerLoading}
-        className={`w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm ${
-          loading ? "cursor-not-allowed opacity-70" : ""
-        }`}
-      >
-        {registerLoading ? (
-          <svg
-            className="w-5 h-5 text-white animate-spin"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            ></path>
-          </svg>
-        ) : (
-          "Register"
-        )}
-      </button>
+              type="submit"
+              disabled={registerLoading}
+              className={`w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm ${
+                registerLoading ? "cursor-not-allowed opacity-70" : ""
+              }`}
+            >
+              {registerLoading ? (
+                <svg
+                  className="w-5 h-5 text-white animate-spin"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              ) : (
+                "Register"
+              )}
+            </button>
           </form>
 
           <div className="mt-4 text-sm text-center">
@@ -254,11 +266,10 @@ const Register = () => {
           </div>
         </div>
       </div>
- </motion.div>
-    </div>
-   
-   
-  );
+    </motion.div>)}
+  </div>
+);
+
 };
 
 export default Register;

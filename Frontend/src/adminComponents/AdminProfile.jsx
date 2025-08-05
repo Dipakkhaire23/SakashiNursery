@@ -158,7 +158,7 @@ const handleLogout = async () => {
     setAuthenticated(false);
     setUserRole(null);  // Immediately reset role
     toast.success("Logged out!");
-    navigate("/", { replace: true });  // Always to public home
+    navigate("/home", { replace: true });  // Always to public home
      window.location.reload()
   }
 };
@@ -186,18 +186,18 @@ const handleLogout = async () => {
       <div className="w-12 h-12 border-4 border-green-500 border-dashed rounded-full animate-spin"></div>
     </div>
   ) : (
-    <div className="max-w-5xl mx-auto p-4 sm:p-6 bg-white shadow-xl rounded-2xl mt-6">
+    <div className="max-w-5xl p-4 mx-auto mt-6 bg-white shadow-xl sm:p-6 rounded-2xl">
       <Toaster position="top-center" />
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b pb-4">
-        <h2 className="text-2xl sm:text-3xl font-bold text-green-700">
+      <div className="flex flex-col items-start justify-between pb-4 mb-6 border-b sm:flex-row sm:items-center">
+        <h2 className="text-2xl font-bold text-green-700 sm:text-3xl">
           ADMIN Profile
         </h2>
       </div>
 
       {/* Profile Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {/* Profile Photo */}
         <div className="flex flex-col items-center text-center">
           <img
@@ -206,7 +206,7 @@ const handleLogout = async () => {
               "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
             }
             alt="Profile"
-            className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-green-600 shadow-md"
+            className="object-cover border-4 border-green-600 rounded-full shadow-md w-28 h-28 sm:w-36 sm:h-36"
           />
 
           {isEditMode && (
@@ -219,7 +219,7 @@ const handleLogout = async () => {
               {profile.image && (
                 <button
                   onClick={() => setProfile((prev) => ({ ...prev, image: "" }))}
-                  className="mt-2 text-red-600 text-sm hover:underline"
+                  className="mt-2 text-sm text-red-600 hover:underline"
                 >
                   Remove Image
                 </button>
@@ -229,7 +229,7 @@ const handleLogout = async () => {
         </div>
 
         {/* Profile Details */}
-        <div className="md:col-span-2 space-y-5">
+        <div className="space-y-5 md:col-span-2">
           {[
             ["Name", "name"],
             ["Email", "email"],
@@ -240,7 +240,7 @@ const handleLogout = async () => {
             ["Login Date", "createdDate"],
           ].map(([label, key]) => (
             <div key={key}>
-              <label className="block text-gray-600 font-medium text-sm sm:text-base">
+              <label className="block text-sm font-medium text-gray-600 sm:text-base">
                 {label}:
               </label>
               {isEditMode && key !== "createdDate" ? (
@@ -249,7 +249,7 @@ const handleLogout = async () => {
                     name="gender"
                     value={profile.gender}
                     onChange={handleChange}
-                    className="w-full p-2 border rounded mt-1 text-sm"
+                    className="w-full p-2 mt-1 text-sm border rounded"
                   >
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
@@ -262,11 +262,11 @@ const handleLogout = async () => {
                     name={key}
                     value={profile[key]}
                     onChange={handleChange}
-                    className="w-full p-2 border rounded mt-1 text-sm"
+                    className="w-full p-2 mt-1 text-sm border rounded"
                   />
                 )
               ) : (
-                <p className="text-gray-800 mt-1 text-sm">{profile[key]}</p>
+                <p className="mt-1 text-sm text-gray-800">{profile[key]}</p>
               )}
             </div>
           ))}
@@ -274,34 +274,34 @@ const handleLogout = async () => {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3 justify-center sm:justify-start mt-10">
+      <div className="flex flex-wrap justify-center gap-3 mt-10 sm:justify-start">
         <button
           onClick={async () => {
             if (isEditMode) await handleSubmit();
             setIsEditMode(!isEditMode);
           }}
-          className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-full text-sm sm:text-base shadow transition"
+          className="px-5 py-2 text-sm text-white transition bg-green-600 rounded-full shadow hover:bg-green-700 sm:text-base"
         >
           {isEditMode ? "💾 Save Profile" : "✏️ Edit Profile"}
         </button>
 
         <button
           onClick={() => setShowPasswordModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm sm:text-base shadow transition"
+          className="px-5 py-2 text-sm text-white transition bg-blue-600 rounded-full shadow hover:bg-blue-700 sm:text-base"
         >
           🔐 Change Password
         </button>
 
         <button
           onClick={handleLogout}
-          className="bg-gray-700 hover:bg-gray-800 text-white px-5 py-2 rounded-full text-sm sm:text-base shadow transition"
+          className="px-5 py-2 text-sm text-white transition bg-gray-700 rounded-full shadow hover:bg-gray-800 sm:text-base"
         >
           🚪 Logout
         </button>
 
         <button
           onClick={() => setShowDeleteModal(true)}
-          className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full text-sm sm:text-base shadow transition"
+          className="px-5 py-2 text-sm text-white transition bg-red-600 rounded-full shadow hover:bg-red-700 sm:text-base"
         >
           🗑 Delete Account
         </button>
@@ -309,28 +309,28 @@ const handleLogout = async () => {
 
       {/* Delete Account Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50 px-4">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
-            <h3 className="text-lg font-bold text-red-700 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+            <h3 className="mb-4 text-lg font-bold text-red-700">
               Confirm Account Deletion
             </h3>
-            <p className="text-sm mb-2">Enter your email to confirm:</p>
+            <p className="mb-2 text-sm">Enter your email to confirm:</p>
             <input
               type="email"
               value={confirmEmail}
               onChange={(e) => setConfirmEmail(e.target.value)}
               placeholder="Enter your email"
-              className="p-2 border rounded w-full mb-4"
+              className="w-full p-2 mb-4 border rounded"
             />
             <div className="flex justify-end gap-2">
               <button
-                className="bg-gray-300 px-4 py-2 rounded"
+                className="px-4 py-2 bg-gray-300 rounded"
                 onClick={() => setShowDeleteModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-red-600 text-white px-4 py-2 rounded"
+                className="px-4 py-2 text-white bg-red-600 rounded"
                 onClick={handleConfirmDelete}
               >
                 Confirm Delete
@@ -342,32 +342,32 @@ const handleLogout = async () => {
 
       {/* Change Password Modal */}
       {showPasswordModal && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50 px-4">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
-            <h3 className="text-lg font-bold mb-4">Change Password</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+            <h3 className="mb-4 text-lg font-bold">Change Password</h3>
             <input
               type="password"
               placeholder="Old Password"
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
-              className="p-2 border rounded w-full mb-3"
+              className="w-full p-2 mb-3 border rounded"
             />
             <input
               type="password"
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="p-2 border rounded w-full mb-4"
+              className="w-full p-2 mb-4 border rounded"
             />
             <div className="flex justify-end gap-2">
               <button
-                className="bg-gray-300 px-4 py-2 rounded"
+                className="px-4 py-2 bg-gray-300 rounded"
                 onClick={() => setShowPasswordModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-green-600 text-white px-4 py-2 rounded"
+                className="px-4 py-2 text-white bg-green-600 rounded"
                 onClick={handleChangePassword}
               >
                 Change

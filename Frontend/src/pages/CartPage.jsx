@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 // const token = localStorage.getItem('token');
 
-const CartPage = () => {
+const CartPage = ({setCartItemCoun}) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -99,6 +99,13 @@ const CartPage = () => {
       }
     );
     toast.success("Removed from cart");
+     // 🟢 Option 1: Re-fetch cart count (recommended)
+      const cartResponse = await axios.get(
+        import.meta.env.VITE_BACKEND_URL + "/api/carts/CartItemCount",
+        { withCredentials: true }
+      );
+      setCartItemCoun(cartResponse.data);
+      console.log(cartResponse.data)
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   } catch (error) {
     console.error("Error removing item:", error);
@@ -147,7 +154,7 @@ const CartPage = () => {
 
 
 const handlePayment = async () => {
-  setIsProcessing(true); // ⏳ Start loading
+  setIsProcessing(true); // Start loading spinner
 
   const isLoaded = await loadRazorpayScript();
   if (!isLoaded) {
@@ -155,20 +162,19 @@ const handlePayment = async () => {
     setIsProcessing(false);
     return;
   }
-   
 
   try {
-    
-    // Step 1: Create order on backend
-    const order = await createOrder(); // should return: { id, amount, currency }
+    // Step 1: Create Razorpay order from backend
+    const order = await createOrder();
+
     if (!order || !order.amount || !order.id) {
-  toast.error("Order creation failed. Please try again.");
-  setIsProcessing(false);
-  return;
-}
+      toast.error("Order creation failed. Please try again.");
+      setIsProcessing(false);
+      return;
+    }
 
     const options = {
-      key: "rzp_live_MHCWVpI4r7gNl1", // ✅ Live Razorpay key    rzp_live_MHCWVpI4r7gNl1
+      key: "rzp_live_MHCWVpI4r7gNl1", // Replace with your actual Razorpay key   rzp_test_D7NdDAgpcCcaUy
       amount: order.amount,
       currency: order.currency,
       name: "Sakshi Nursery",
@@ -178,8 +184,6 @@ const handlePayment = async () => {
 
       handler: async (response) => {
         try {
-          navigate("/congratulations");
-          // Step 2: Verify payment with backend
           const verifyRes = await axios.post(
             import.meta.env.VITE_BACKEND_URL + "/api/payment/verify",
             {
@@ -195,12 +199,9 @@ const handlePayment = async () => {
             }
           );
 
-          toast.success(verifyRes.data || "Payment Successful!");
-
-          // ✅ Close modal first
+          toast.success(verifyRes.data?.message || "Payment Successful!");
           setShowModal(false);
 
-          // ✅ Delay navigation slightly to ensure modal closes before page change
           setTimeout(() => {
             navigate("/congratulations", {
               state: {
@@ -216,25 +217,45 @@ const handlePayment = async () => {
           setIsProcessing(false);
         }
       },
+
+      modal: {
+        ondismiss: () => {
+          console.log("Payment popup closed by user.");
+        //  toast("Payment cancelled"); // neutral toast
+// or
+toast.error("Payment cancelled"); // red error style
+
+
+          setIsProcessing(false); // Reset loading
+        },
+      },
     };
 
     const rzp = new window.Razorpay(options);
 
-    // Open Razorpay payment modal
-    rzp.open();
-
-    // Handle payment failure
-    rzp.on("payment.failed", function (response) {
-      console.error("Payment failed:", response);
+    rzp.on("payment.failed", (response) => {
+      console.error("Payment failed:", response.error);
       toast.error("Payment failed. Please try again.");
       setIsProcessing(false);
     });
+
+    rzp.open();
+
+    // Optional fallback in case Razorpay doesn't call ondismiss (safety net)
+    setTimeout(() => {
+      if (isProcessing) {
+        console.warn("Fallback: resetting isProcessing after timeout.");
+        setIsProcessing(false);
+      }
+    }, 15000); // 15s fallback
   } catch (error) {
-    console.error("Payment error:", error);
-    toast.error("Something went wrong during payment.");
+    console.error("Error during payment setup:", error);
+    toast.error("Something went wrong during payment. Please try again.");
     setIsProcessing(false);
   }
 };
+
+
 
 
   const navigate = useNavigate();
@@ -250,7 +271,7 @@ const handlePayment = async () => {
 
   return (
     <main className="min-h-screen p-6 bg-green-50">
-      <Toaster position="top-right" />
+      <Toaster position="top-left" />
       <h1 className="mb-4 text-2xl font-bold text-center text-green-800">
         Cart Items Added
       </h1>

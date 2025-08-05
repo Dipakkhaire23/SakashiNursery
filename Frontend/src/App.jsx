@@ -6,15 +6,13 @@ import { onMessage } from "firebase/messaging";
 import axios from "axios";
 
 import { toast } from "react-hot-toast";
-import { AnimatePresence } from "framer-motion";
 
 // Auth pages
 import Login from "./authentication/Login";
 import Register from "./authentication/Registration";
 import ForgotPassword from "./authentication/ForgotPassword";
 import ResetPassword from "./authentication/Passwwordresset";
-import OAuthSuccess from "./authentication/OAuthSuccess"
-
+import OAuthSuccess from "./authentication/OAuthSuccess";
 
 // Admin Components
 import Sidebar from "./adminComponents/Sidebar";
@@ -60,8 +58,7 @@ import Merigold from "./pages/vegetables/Merigold";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import Infrastructure from "./pages/Infrastructure";
-import Team from "./pages/Team";
-import Phases from "./pages/Phases";
+
 import BookingPhase from "./pages/phases/BookingPhase";
 import SowingPhase from "./pages/phases/SowingPhase";
 import PlantPreparation from "./pages/phases/PlantPreparation";
@@ -70,8 +67,8 @@ import PlantDelivery from "./pages/phases/PlantDelivery";
 import Profile from "./pages/Profile";
 import CartPage from "./pages/CartPage";
 import MyOrders from "./pages/Myorders";
-import ProductPage from './pages/Productpage';
-import ScrollToTop from './pages/ScrollToTop';
+import ProductPage from "./pages/Productpage";
+import ScrollToTop from "./pages/ScrollToTop";
 
 const App = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
@@ -95,7 +92,7 @@ const App = () => {
     // Listen for foreground notifications
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Notification received:", payload.notification);
-      toast.success(payload.notification?.body || "New notification");
+      toast.success( "Notification has been send");
     });
 
     return () => {
@@ -103,15 +100,15 @@ const App = () => {
       unsubscribe();
     };
   }, [userId]);
-  
-   useEffect(() => {
-    const hasRefreshed = sessionStorage.getItem("hasRefreshed");
 
-    if (!hasRefreshed) {
-      sessionStorage.setItem("hasRefreshed", "true");
-      window.location.reload();
-    }
-  }, []);
+  //  useEffect(() => {
+  //   const hasRefreshed = sessionStorage.getItem("hasRefreshed");
+
+  //   if (!hasRefreshed) {
+  //     sessionStorage.setItem("hasRefreshed", "true");
+  //     window.location.reload();
+  //   }
+  // }, []);
 
   const authPaths = [
     "/login",
@@ -119,33 +116,8 @@ const App = () => {
     "/forgot-password",
     "/reset-password",
   ];
-  // const publicPaths = [
-  //   "/",
-  //   "/about-us",
-  //   "/contact-us",
-  //   "/infrastructure",
-  //   "/team",
-  //   "/phases",
-  //   "/vegetable/cauliflower",
-  //   "/vegetable/papaya",
-  //   "/vegetable/brinjal",
-  //   "/vegetable/lady-finger",
-  //   "/vegetable/cabbage",
-  //   "/vegetable/bottle-gourd",
-  //   "/vegetable/bitter-gourd",
-  //   "/vegetable/tomato",
-  //   "/vegetable/chilli",
-  //   "/vegetable/capsicum",
-  //   "/vegetable/watermelon",
-  //   "/vegetable/muskmelon",
-  //   "/vegetable/cucumber",
-  //   "/vegetable/small-cucumber",
-  //   "/vegetable/drumstick",
-  //   "/vegetable/merigold",
-  // ];
 
   const isAuthPath = authPaths.includes(location.pathname);
-  // const isPublicPath = publicPaths.includes(location.pathname);
 
   const token = localStorage.getItem("token");
 
@@ -158,35 +130,22 @@ const App = () => {
         .then((res) => {
           setUserRole(res.data.userrole);
           setAuthenticated(true);
+          setLoadingAuth(false); // ✅ Moved here
         })
         .catch((err) => {
           if (err.response && err.response.status === 401) {
-            // Not logged in or token expired
             setUserRole(null);
           } else {
             console.error("Failed to fetch role", err);
           }
-          // setUserRole(null)
           setAuthenticated(false);
+          setLoadingAuth(false); // ✅ Also here in error
         });
+    } else {
+      setLoadingAuth(false); // ✅ Token not present case
     }
-    setLoadingAuth(false);
-    //   const token = localStorage.getItem("token"); // ✅ Get token from cookie
-    //  const cookieRole = localStorage.getItem("role");
+  }, [token]);
 
-    //   if (token && cookieRole) {
-    //     // setTimeout(()=>{
-
-    //     // },10000)
-    //      setAuthenticated(true);
-    //     setUserRole(cookieRole);
-    // } else {
-    //     setAuthenticated(false);
-    //     setUserRole(null);
-    //   }
-  }, []);
-
-  
   //  useEffect(() => {
   //   // Disable right-click
   //   const handleContextMenu = (e) => {
@@ -217,13 +176,12 @@ const App = () => {
     <>
       <Home />
       <ProductCard />
-       <Award/>
+      <Award />
       <Customer />
       <UniqueFeature />
-      <ContactUs/>
-      
+      <ContactUs />
+
       <WhatsAppChat />
-     
     </>
   );
   if (loadingAuth) {
@@ -236,31 +194,52 @@ const App = () => {
 
   if (isAuthPath) {
     return (
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+      <Routes location={location} key={location.pathname}>
+        <Route
+          path="/login"
+          element={
+            <Login
+              setAuthenticated={setAuthenticated}
+              setUserRole={setUserRole}
+            />
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <Register
+              setAuthenticated={setAuthenticated}
+              setUserRole={setUserRole}
+            />
+          }
+        />
 
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-         
-          <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
-      </AnimatePresence>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    );
+  }
+  if (location.pathname === "/oauth-success") {
+    return (
+      <Routes>
+        <Route
+          path="/oauth-success"
+          element={
+            <OAuthSuccess
+              setAuthenticated={setAuthenticated}
+              setUserRole={setUserRole}
+            />
+          }
+        />
+        <Route path="*" element={<Navigate to="/oauth-success" />} />
+      </Routes>
     );
   }
 
-  // if (!authenticated && !isPublicPath) {
-  //   const alreadySetPath = localStorage.getItem("redirectAfterLogin");
-  //   if (!alreadySetPath || alreadySetPath === "/login") {
-  //     // localStorage.setItem("redirectAfterLogin", location.pathname);
-  //   }
-  //   return <Navigate to="/login" replace />;
-  // }
-
   if (authenticated && userRole === "ADMIN") {
     return (
-      
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar sidebarCollapsed={sidebarCollapsed} />
         {!sidebarCollapsed && (
@@ -304,49 +283,94 @@ const App = () => {
     );
   }
 
-  if (authenticated && userRole === "CUSTOMER") {
+  if (authenticated && userRole == "CUSTOMER") {
     return (
       <>
-        <Navbar  cartItemCoun={cartItemCoun}/>
+        <Navbar cartItemCoun={cartItemCoun} authenticated={authenticated} />
         <ScrollToTop />
         <Routes>
-         
-           <Route path="/products" element={<ProductPage />} />
-          <Route path="/about-us" element={<AboutUs />} />
-           <Route path="/home" element={<HomeLayout />} />
-          <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/infrastructure" element={<Infrastructure />} />
-          <Route path="/team" element={<Team />} />
-          <Route path="/phases" element={<Phases />} />
+          <Route path="/products" element={<ProductPage />} />
+
           <Route path="/profile" element={<Profile />} />
-          <Route path="/cart" element={<CartPage  />} />
+          <Route
+            path="/cart"
+            element={<CartPage setCartItemCoun={setCartItemCoun} />}
+          />
           <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/congratulations" element={<Congratulations />} />
 
           {/* Veg */}
-          <Route path="/vegetable/cauliflower" element={<Cauliflower  setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/papaya" element={<Papaya  setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/brinjal" element={<Brinjal setCartItemCoun={setCartItemCoun} />} />
-          <Route path="/vegetable/lady-finger" element={<LadyFinger setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/cabbage" element={<Cabbage setCartItemCoun={setCartItemCoun} />} />
-          <Route path="/vegetable/bottle-gourd" element={<BottleGourd  setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/bitter-gourd" element={<BitterGourd  setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/tomato" element={<Tomato setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/chilli" element={<Chilli setCartItemCoun={setCartItemCoun} />} />
-          <Route path="/vegetable/capsicum" element={<Capsicum  setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/watermelon" element={<Watermelon  setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/muskmelon" element={<Muskmelon setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/cucumber" element={<Cucumber setCartItemCoun={setCartItemCoun} />} />
-          <Route path="/vegetable/small-cucumber" element={<SmallCucumber setCartItemCoun={setCartItemCoun}/>} />
-          <Route path="/vegetable/drumstick" element={<Drumstick setCartItemCoun={setCartItemCoun} />} />
-          <Route path="/vegetable/merigold" element={<Merigold  setCartItemCoun={setCartItemCoun}/>} />
+          <Route
+            path="/vegetable/cauliflower"
+            element={<Cauliflower setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/papaya"
+            element={<Papaya setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/brinjal"
+            element={<Brinjal setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/lady-finger"
+            element={<LadyFinger setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/cabbage"
+            element={<Cabbage setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/bottle-gourd"
+            element={<BottleGourd setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/bitter-gourd"
+            element={<BitterGourd setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/tomato"
+            element={<Tomato setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/chilli"
+            element={<Chilli setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/capsicum"
+            element={<Capsicum setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/watermelon"
+            element={<Watermelon setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/muskmelon"
+            element={<Muskmelon setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/cucumber"
+            element={<Cucumber setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/small-cucumber"
+            element={<SmallCucumber setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/drumstick"
+            element={<Drumstick setCartItemCoun={setCartItemCoun} />}
+          />
+          <Route
+            path="/vegetable/merigold"
+            element={<Merigold setCartItemCoun={setCartItemCoun} />}
+          />
 
           {/* Phases */}
-          <Route path="/phases/booking" element={<BookingPhase />} />
+          {/* <Route path="/phases/booking" element={<BookingPhase />} />
           <Route path="/phases/sowing" element={<SowingPhase />} />
           <Route path="/phases/preparing" element={<PlantPreparation />} />
           <Route path="/phases/visit" element={<CustomerVisitPhase />} />
-          <Route path="/phases/delivered" element={<PlantDelivery />} />
+          <Route path="/phases/delivered" element={<PlantDelivery />} /> */}
           <Route path="*" element={<Navigate to="/products" />} />
         </Routes>
         <Footer />
@@ -356,25 +380,25 @@ const App = () => {
 
   // Default public view
   return (
-   
-      <>
+    <>
       <Navbar />
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<HomeLayout />} />
+        <Route path="/home" element={<HomeLayout />} />
         <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/contact-us" element={<ContactUs />} />
+        {/* <Route path="/contact-us" element={<ContactUs />} /> */}
         <Route path="/infrastructure" element={<Infrastructure />} />
-        <Route path="/team" element={<Team />} />
-        <Route path="/phases" element={<Phases />} />
-         <Route path="/oauth-success" element={<OAuthSuccess />} />
+        {/* <Route path="/team" element={<Team />} />
+        <Route path="/phases" element={<Phases />} /> */}
+
         {/* Phases */}
-          <Route path="/phases/booking" element={<BookingPhase />} />
-          {/* <Route path="/products" element={<ProductPage />} /> */}
-          <Route path="/phases/sowing" element={<SowingPhase />} />
-          <Route path="/phases/preparing" element={<PlantPreparation />} />
-          <Route path="/phases/visit" element={<CustomerVisitPhase />} />
-          <Route path="/phases/delivered" element={<PlantDelivery />} />
+        <Route path="/phases/booking" element={<BookingPhase />} />
+        <Route path="/products" element={<ProductPage />} />
+        <Route path="/phases/sowing" element={<SowingPhase />} />
+        <Route path="/phases/preparing" element={<PlantPreparation />} />
+        <Route path="/phases/visit" element={<CustomerVisitPhase />} />
+        <Route path="/phases/delivered" element={<PlantDelivery />} />
+
         <Route path="/vegetable/cauliflower" element={<Cauliflower />} />
         <Route path="/vegetable/papaya" element={<Papaya />} />
         <Route path="/vegetable/brinjal" element={<Brinjal />} />
@@ -391,14 +415,10 @@ const App = () => {
         <Route path="/vegetable/small-cucumber" element={<SmallCucumber />} />
         <Route path="/vegetable/drumstick" element={<Drumstick />} />
         <Route path="/vegetable/merigold" element={<Merigold />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/home" />} />
       </Routes>
       <Footer />
     </>
-  
-
-    
-    
   );
 };
 
