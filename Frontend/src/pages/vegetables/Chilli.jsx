@@ -5,9 +5,8 @@ import { FaStar } from "react-icons/fa";
 import { LoaderCircle } from "lucide-react";
 // import { useLocation } from "react-router-dom";
 // import Navbar from "../../components/Navbar";
+import LineClampedDescription from "./LineClampedDescription"
 
-
-// eslint-disable-next-line react/prop-types
 const Chilli = ({setCartItemCoun}) => {
   //  const location = useLocation();
   const categoryName = "Chilli";
@@ -268,7 +267,7 @@ const Chilli = ({setCartItemCoun}) => {
             <p className="mb-2 text-lg font-semibold text-green-700">
               ₹{selectedProduct.price}
             </p>
-            <p className="mb-2 text-gray-700">{selectedProduct.description}</p>
+           <LineClampedDescription description={selectedProduct.description} />
             <p className="mb-1 text-md">
               <span className="font-semibold">Category:</span>{" "}
               {selectedProduct?.category?.name || "N/A"}
@@ -525,8 +524,21 @@ const Chilli = ({setCartItemCoun}) => {
                 alt={p.name}
                 className="object-cover w-full h-40 mb-4 rounded-md"
               />
-              <p className="mb-3 text-gray-700">{p.description}</p>
+             {/* <LineClampedDescription description={p.description} /> */}
             </div>
+   <div className="flex items-end justify-between">
+  <LineClampedDescription description={p.description} />
+  <p
+    className={`text-sm font-medium ${
+      p.status === "AVAILABLE" ? "text-green-800" : "text-red-600"
+    }`}
+  >
+    {p.status}
+  </p>
+</div>
+
+
+            
             <div className="flex flex-col gap-2 mb-2 sm:flex-row sm:items-center sm:justify-between">
   {/* Price and Status Section */}
   <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
@@ -550,13 +562,13 @@ const Chilli = ({setCartItemCoun}) => {
   
 
 </div>
-<p
+{/* <p
   className={`text-lg font-semibold ${
     p.status === "AVAILABLE" ? "text-green-800" : "text-red-600"
   }`}
 >
   Status: {p.status}
-</p>
+</p> */}
 
 
             <button

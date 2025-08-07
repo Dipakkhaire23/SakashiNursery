@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { messaging, generateAndSyncToken } from "./pages/firebase/FCM";
 import { onMessage } from "firebase/messaging";
 import axios from "axios";
+import AddMobile from "./authentication/AddMobile"
 
 import { toast } from "react-hot-toast";
 
@@ -237,6 +238,23 @@ const App = () => {
       </Routes>
     );
   }
+    if (location.pathname === "/add-mobile") {
+    return (
+      <Routes>
+        <Route
+          path="/add-mobile"
+          element={
+            <AddMobile 
+              setAuthenticated={setAuthenticated}
+              setUserRole={setUserRole}
+            />
+          }
+        />
+        <Route path="*" element={<Navigate to="/add-mobile" />} />
+      </Routes>
+    );
+  }
+
 
   if (authenticated && userRole === "ADMIN") {
     return (

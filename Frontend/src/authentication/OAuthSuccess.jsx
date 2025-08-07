@@ -28,6 +28,7 @@ const OAuthSuccessPage = ({ setAuthenticated, setUserRole }) => {
         localStorage.removeItem("redirectAfterLogin");
         navigate(redirectPath, { replace: true });
       }
+      
     } else {
       
       navigate("/login");

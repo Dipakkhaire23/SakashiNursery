@@ -1,5 +1,9 @@
-// tailwind.config.js
+/** @type {import('tailwindcss').Config} */
 module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}", // or your actual paths
+  ],
   theme: {
     extend: {
       keyframes: {
@@ -13,4 +17,7 @@ module.exports = {
       },
     },
   },
-}
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+  ],
+};

@@ -12,6 +12,8 @@ const Profile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadingdel, setLoadingdel] = useState(false);
+
   const [profile, setProfile] = useState({
     id: "",
     name: "",
@@ -36,6 +38,7 @@ const Profile = () => {
 
   const handleDeleteAccount = async () => {
     try {
+      setLoadingdel(true)
       // Step 2: Now call logout (to expire cookie)
       await fetch(import.meta.env.VITE_BACKEND_URL+"/auth/logout", {
         method: "POST",
@@ -69,6 +72,9 @@ const Profile = () => {
         "Failed to delete account: " +
           (err.response?.data?.message || err.message)
       );
+    }
+    finally{
+      setLoadingdel(false);
     }
   };
 
@@ -390,36 +396,100 @@ setLoading(false)
 
   {/* Delete Account Modal */}
   {showDeleteModal && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black bg-opacity-50">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <h3 className="mb-4 text-lg font-bold text-red-700">
-          Confirm Account Deletion
-        </h3>
-        <p className="mb-2 text-sm">Enter your email to confirm:</p>
-        <input
-          type="email"
-          value={confirmEmail}
-          onChange={(e) => setConfirmEmail(e.target.value)}
-          placeholder="Enter your email"
-          className="w-full p-2 mb-4 border rounded"
-        />
-        <div className="flex justify-end gap-2">
-          <button
-            className="px-4 py-2 bg-gray-300 rounded"
-            onClick={() => setShowDeleteModal(false)}
-          >
-            Cancel
-          </button>
-          <button
-            className="px-4 py-2 text-white bg-red-600 rounded"
-            onClick={handleConfirmDelete}
-          >
-            Confirm Delete
-          </button>
-        </div>
+  <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black bg-opacity-50">
+    <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+      <h3 className="flex items-center gap-2 mb-4 text-lg font-bold text-red-700">
+        <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+        </svg>
+        Confirm Account Deletion
+      </h3>
+
+      <p className="mb-3 text-sm text-gray-700">
+        Deleting your account is permanent and cannot be undone.
+        This will remove all your personal data, purchase history, and preferences.
+      </p>
+
+      <p className="mb-2 text-sm font-medium text-gray-800">
+        To confirm, please enter your email:
+      </p>
+
+      <input
+        type="email"
+        value={confirmEmail}
+        onChange={(e) => setConfirmEmail(e.target.value)}
+        placeholder="Enter your email"
+        className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring focus:ring-red-200"
+      />
+
+      <div className="flex justify-end gap-2">
+        {/* Cancel Button */}
+        <button
+          className="flex items-center justify-center gap-2 px-4 py-2 text-gray-800 bg-gray-300 rounded hover:bg-gray-400"
+          onClick={() => setShowDeleteModal(false)}
+          disabled={loadingdel}
+        >
+          {loadingdel && (
+            <svg
+              className="w-4 h-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              ></path>
+            </svg>
+          )}
+          {loadingdel ? 'Cancelling...' : 'Cancel'}
+        </button>
+
+        {/* Confirm Delete Button */}
+        <button
+          className="flex items-center justify-center gap-2 px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700"
+          onClick={handleConfirmDelete}
+          disabled={loadingdel}
+        >
+          {loadingdel && (
+            <svg
+              className="w-4 h-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              ></path>
+            </svg>
+          )}
+          {loadingdel ? 'Deleting...' : 'Confirm Delete'}
+        </button>
       </div>
     </div>
-  )}
+  </div>
+)}
+
+
 
   {/* Change Password Modal */}
   {showPasswordModal && (
