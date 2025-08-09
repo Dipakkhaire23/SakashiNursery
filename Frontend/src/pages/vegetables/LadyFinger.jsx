@@ -402,7 +402,7 @@ const LadyFinger = ({setCartItemCoun}) => {
 
             {showDiscount && (
               <div className="p-4 mt-4 bg-gray-100 border border-green-300 rounded">
-  <p>1️⃣ Book online and get a 25% discount.</p>
+  <p>1️⃣ Book online and get a 10% discount.</p>
   <p>2️⃣ Order in bulk (10,000 Plants) and enjoy free delivery.</p>
 </div>
 

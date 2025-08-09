@@ -53,7 +53,7 @@ const AddMobile = ({ setAuthenticated, setUserRole }) => {
       
     } catch (error) {
       console.error("Error submitting mobile number:", error);
-      alert("Failed to submit mobile number. Please try again.");
+      alert("Mobile Number Already exists.");
     } finally {
       setLoading(false);
     }

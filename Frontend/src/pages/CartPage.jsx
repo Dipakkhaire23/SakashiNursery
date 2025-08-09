@@ -430,7 +430,7 @@ toast.error("Payment cancelled"); // red error style
               {!item.isEditing && (
                 <div className="pt-3 mt-4 border-t">
                   <p className="text-sm font-medium text-green-700">
-                    💰 25% Booking Amount: ₹
+                    💰 10% Booking Amount: ₹
                     {(item.price * item.quantity * 0.25).toFixed(2)}
                   </p>
                   <p className="text-xs italic text-gray-500">
