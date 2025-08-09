@@ -37,7 +37,7 @@ const crops = [
   { name: 'Cucumber', price: '2.00', images: [kakdi] },
   { name: 'Small Cucumber', price: '2.00', images: [smallkakdi] },
   { name: 'Drumstick', price: '1.50', images: [shevga] },
-  { name: 'Merigold', price: '3.50', images: [marigold] },
+  { name: 'Merigold', price: '3.00', images: [marigold] },
 ];
 
 const ProductPage = () => {
