@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { Package, ShoppingCart, Users,Eye ,LoaderCircle} from "lucide-react";
 import axios from "axios";
 
@@ -19,15 +19,24 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        const token = localStorage.getItem("token");
         setLoading(true)
-        const res = await axios.get(import.meta.env.VITE_BACKEND_URL+"/api/admin/orders/orders/recent", {
+        const res = await axios.get(import.meta.env.VITE_BACKEND_URL+"/api/admin/orders/orders/recent",
+          
+          {
           // headers: {
           //   // Authorization: `Bearer ${token}`,
           //    withCredentials: true // ✅ Send cookies with the request
           // },
+
+           headers: {
+    Authorization: `Bearer ${token}`
+  },
           withCredentials: true // ✅ Send cookies with the request
           
-        });
+        }
+      
+      );
         setOrders(res.data);
       } catch (err) {
         console.error("Failed to fetch orders:", err);
@@ -40,12 +49,16 @@ const Dashboard = () => {
   }, [token]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     fetch(import.meta.env.VITE_BACKEND_URL+"/api/admin/dashboard/counts",{
       // headers: {
       //   // Authorization: `Bearer ${token}`,
       //   // DO NOT set Content-Type here; browser will auto-set correct boundary
       //    withCredentials: true // ✅ Send cookies with the request
       // },
+       headers: {
+    Authorization: `Bearer ${token}`
+  },
 
       credentials: "include",
       method:"GET",
