@@ -18,16 +18,11 @@ const OAuthSuccessPage = ({ setAuthenticated, setUserRole }) => {
 
 
       setAuthenticated(true); // 🔁 Update state here
-      setUserRole(role); // 🔁 Update role here
-
-      if (role === "ADMIN") {
-        navigate("/admin");
-      } else if (role === "CUSTOMER") {
-        const redirectPath =
-          localStorage.getItem("redirectAfterLogin") || "/products";
-        localStorage.removeItem("redirectAfterLogin");
-        navigate(redirectPath, { replace: true });
-      }
+      setUserRole(role || "CUSTOMER"); // 🔁 Update role here
+      const redirectPath =
+        localStorage.getItem("redirectAfterLogin") || "/products";
+      localStorage.removeItem("redirectAfterLogin");
+      navigate(redirectPath, { replace: true });
       
     } else {
       

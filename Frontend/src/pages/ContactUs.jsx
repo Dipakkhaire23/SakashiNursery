@@ -1,4 +1,5 @@
 import  { useRef, useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -44,6 +45,13 @@ const taglineRef = useRef(null); // ✅ define the ref
 
   return (
     <div className="px-6 py-12 mx-auto max-w-7xl bg-green-50">
+      <Helmet>
+        <title>Contact Us | Sakshi Hi-Tech Nursery, Niphad-Nashik</title>
+        <meta name="description" content="Contact Sakshi Hi-Tech Nursery in Niphad-Nashik, Maharashtra. Phone: +91 7972456090. Order high-quality vegetable seedlings and get expert agricultural advice." />
+        <meta name="keywords" content="Contact Sakshi Nursery, Sakshi Nursery Phone Number, Sakshi Nursery Nashik Address, Buy Seedlings Maharashtra" />
+        <meta property="og:title" content="Contact Sakshi Hi-Tech Nursery" />
+        <meta property="og:description" content="Reach out to Sakshi Nursery for seedling bookings and expert plant guidance." />
+      </Helmet>
       {/* <div className="mb-10 text-center">
         <h1 className="mb-4 text-4xl font-extrabold text-green-950">
           Welcome to <span className="font-serif">Sakshi Hi-tech</span> Nursery

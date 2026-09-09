@@ -49,12 +49,12 @@ const [fadeIn, setFadeIn] = useState(false);
       />
 
       <>
-      {/* Light black overlay */}
+      {/* Modern dark gradient overlay */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          background: 'linear-gradient(to bottom, rgba(6, 40, 20, 0.6), rgba(6, 40, 20, 0.85))',
           zIndex: 1,
         }}
       ></div>
@@ -93,16 +93,13 @@ const [fadeIn, setFadeIn] = useState(false);
             lineHeight: '1.8',
           }}
         >
-          Empowering Indian Agriculture with Excellence. <br />
-          Delivering premium quality seeds, saplings, and essential agri-inputs to farmers. <br />
-          Bringing fresh, nutritious fruits and vegetables straight to consumers’ homes.
-        </h3>
+At Sakshi Hitech Nursery, we grow healthy and high-quality vegetable plants with care. Every plant is nurtured to ensure strong growth and good survival after planting. We are committed to providing reliable saplings to farmers. Our focus is on quality, trust, and helping our customers achieve better harvests.        </h3>
        <Link
-  to="/register"
-  className="relative inline-block px-5 py-2 overflow-hidden font-semibold text-white transition border-2 border-yellow-300 rounded-lg group hover:text-white"
+  to="/products"
+  className="relative inline-block px-6 py-2.5 overflow-hidden font-bold text-white transition border-2 border-yellow-300 rounded-lg group duration-300 mt-4 shadow-lg hover:shadow-yellow-300/20"
 >
   <span className="absolute top-0 left-0 z-0 w-full h-0 transition-all duration-300 ease-in-out bg-yellow-300 group-hover:h-full"></span>
-  <span className="relative z-10 text-white">Get Started</span>
+  <span className="relative z-10 group-hover:text-green-900 transition-colors">Explore Our Plants</span>
 </Link>
 
       </div>

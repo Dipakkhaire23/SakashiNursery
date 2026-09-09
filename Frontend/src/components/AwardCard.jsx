@@ -40,6 +40,8 @@ const AwardCard = () => {
             <img
               src={award.img}
               alt={`Award ${index + 1}`}
+              loading="lazy"
+              decoding="async"
               className="object-cover w-full mb-4 h-60 rounded-xl"
             />
             <div className="text-center">

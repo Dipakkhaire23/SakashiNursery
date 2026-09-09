@@ -111,9 +111,13 @@ const Footer = () => {
 
   
 </div>
-      <div className="mt-10 text-sm text-center text-black">
-        &copy; {new Date().getFullYear()} Sakshi Hi-Tech Nursery. All rights reserved.
+      <div className="mt-10 text-sm text-center text-green-200/80 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 border-t border-green-700/50 pt-6">
+        <span>&copy; {new Date().getFullYear()} Sakshi Hi-Tech Nursery Pvt. Ltd.</span>
+       
+       
       </div>
+
+      
     </footer>
   );
 };

@@ -1,11 +1,10 @@
 import { useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import ownerImg from "../images/aboutusimage.jpg";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Team from "./Team";
-import dipak  from "../images/dipak.jpg"
-import atharv  from "../images/atharv.jpg"
-import ashwini  from "../images/ashwini.jpg"
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,6 +51,13 @@ const AboutUs = () => {
 
   return (
     <div className="min-h-screen px-6 py-10 font-sans bg-green-50 md:px-20">
+      <Helmet>
+        <title>About Us | Sakshi Hi-Tech Nursery & Founder Vijay Khaire</title>
+        <meta name="description" content="Learn about Sakshi Hi-Tech Nursery, founded by Mr. Vijay Trambakrao Khaire in 2020. Providing healthy, high-quality vegetable seedlings across Maharashtra." />
+        <meta name="keywords" content="About Sakshi Nursery, Vijay Khaire, Nursery Nashik Maharashtra, Vegetable Seedling Nursery" />
+        <meta property="og:title" content="About Sakshi Hi-Tech Nursery" />
+        <meta property="og:description" content="Founded by Prop. Vijay Trambakrao Khaire, Sakshi Hi-Tech Nursery delivers high-yielding plants and innovative seedling solutions." />
+      </Helmet>
       {/* Header */}
       <div className="max-w-5xl mx-auto text-center">
         <h1 className="mb-4 text-4xl font-extrabold text-green-900">
@@ -171,38 +177,38 @@ const AboutUs = () => {
         </div>
       </section>
       <Team/>
-      <h2 className="flex justify-center font-bold"> Devloped By</h2>
+      {/* <h2 className="flex justify-center font-bold"> Devloped By</h2>
     <div className="flex flex-col justify-center gap-4 px-4 py-2 overflow-x-auto sm:flex-row sm:gap-16 sm:overflow-visible whitespace-nowrap sm:whitespace-normal">
   {/* Member 1 */}
-  <div className="flex items-center space-x-4 min-w-max sm:min-w-0">
+  {/* <div className="flex items-center space-x-4 min-w-max sm:min-w-0">
     <img
       src={dipak}
       alt="Dipak Khaire"
       className="object-cover w-12 h-12 rounded-full"
     />
     <p className="text-sm font-semibold text-black">Dipak Khaire</p>
-  </div>
+  </div> */}
 
   {/* Member 2 */}
-  <div className="flex items-center space-x-4 min-w-max sm:min-w-0">
+  {/* <div className="flex items-center space-x-4 min-w-max sm:min-w-0">
     <img
       src={ashwini}
       alt="Ashwini Salunke"
       className="object-cover w-12 h-12 rounded-full"
     />
     <p className="text-sm font-semibold text-black">Ashwini Salunke</p>
-  </div>
+  </div> */}
 
   {/* Member 3 */}
-  <div className="flex items-center space-x-4 min-w-max sm:min-w-0">
+  {/* <div className="flex items-center space-x-4 min-w-max sm:min-w-0">
     <img
       src={atharv}
       alt="Atharv Kamerkar"
       className="object-cover w-12 h-12 rounded-full"
     />
     <p className="text-sm font-semibold text-black">Atharv Kamerkar</p>
-  </div>
-</div>
+  </div> */}
+    {/* </div> */} 
 
 
     </div>

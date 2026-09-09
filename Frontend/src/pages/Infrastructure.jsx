@@ -1,5 +1,6 @@
 
 
+import { Helmet } from "react-helmet-async";
 import Seeding1 from "../images/seeding1.jpg";
 import Seeding2 from "../images/seeding2.jpg";
 import Seeding3 from "../images/seeding3.jpg";
@@ -34,15 +35,22 @@ const InfrastructureSection = ({ title, description, images }) => {
 const Infrastructure = () => {
   return (
     <div className="w-full">
+      <Helmet>
+        <title>Hi-Tech Infrastructure & Polyhouses | Sakshi Hi-Tech Nursery</title>
+        <meta name="description" content="Explore Sakshi Nursery's state-of-the-art agricultural infrastructure: automated seeder machines, high-density seedling tray manufacturing, and climate-controlled polyhouses." />
+        <meta name="keywords" content="Nursery Infrastructure, Polyhouse Farming, Automatic Seeder Machine, Seedling Tray Manufacturing, High Tech Agriculture Maharashtra" />
+        <meta property="og:title" content="High-Tech Agricultural Infrastructure - Sakshi Nursery" />
+        <meta property="og:description" content="Explore Sakshi Nursery's automated seeder machinery and climate-controlled polyhouse facilities." />
+      </Helmet>
+      {/* Video Section */}
       {/* Video Section */}
      <div className="">
       {/* w-screen h-[500px] overflow-hidden flex justify-center items-center bg-black */}
   <video
     className="w-screen h-auto object-cover transition-all duration-300 ease-in-out rounded-none rotate-[360deg]"
-    src="/videos/Infrastructure.mp4"
+    src="/videos/infra.mp4"
     autoPlay
     loop
-    muted
     playsInline
     controlsList="nodownload noremoteplayback"
     disablePictureInPicture

@@ -1,113 +1,12 @@
-import{ useState, useEffect } from 'react';
-// import { Toaster, toast } from 'react-hot-toast';
+import { useState, useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import chilli  from "../images/chilli.jpg"
-import aryman  from "../images/aryaman.jpg"
-import veer  from "../images/Slidebar_4.jpg"
-import watermeloan  from "../images/watermeloan.jpg"
 import { useNavigate } from "react-router-dom";
+import { plantsData } from "../pages/vegetables/plantsData";
 
-const products = [
-  {
-  id: 1,
-  name: 'veer-333',
-  price: '₹1.0',
-  category: 'Cabbage',
-  description: `कॅबेज वीर-333 ही एक उच्च उत्पादनक्षम संकरित जात आहे. ही वाण गोलसर, घट्ट आणि सम प्रमाणात वाढणाऱ्या गाठींसाठी ओळखली जाते. कमी कालावधीत कापणीस तयार होते आणि बाजारात विक्रीसाठी उत्तम आहे.
-
-वैशिष्ट्ये:
-
-- जलद वाढ – रोप लावल्यानंतर 60-65 दिवसात कापणीस तयार
-- गाठींचे वजन – सरासरी 1.5 ते 2.5 किलो
-- आकर्षक रंग – गडद हिरवट आणि गुळगुळीत पाने
-- रोग प्रतिकार – ब्लॅक रॉट व टॉप बर्नसारख्या आजारांपासून संरक्षण
-- बाजारात टिकाव – वाहतूक व विक्रीसाठी चांगली सहनशीलता
-
-लागवडीचा योग्य कालावधी:
-ऑक्टोबर ते डिसेंबर हा कालावधी लागवडीसाठी सर्वोत्तम आहे.
-
-शेतकरी मित्रांनो, जर तुम्हाला कमी वेळात चांगला उत्पादन व बाजारभाव हवा असेल, तर कॅबेज वीर-333 हे उत्तम निवड आहे! 🌱💚`,
-  wiki: 'https://en.wikipedia.org/wiki/Cabbage',
-  image: veer,
-},
-
-{
-  id: 2,
-  name: 'Armar',
-  price: '₹1.50',
-  category: 'Chilli',
-  description: `Armar मिरची ही उच्च प्रतीची संकरित जात आहे. या जातीच्या मिरच्या मध्यम लांब, गडद हिरव्या आणि आकर्षक रंगाच्या असतात. चव तिखट आणि उत्पादन चांगले मिळते. बाजारात विक्रीसाठी तसेच सुकवण्यासाठी योग्य.
-
-वैशिष्ट्ये:
-
-- मिरचीची लांबी: 10-12 सेमी
-- गडद हिरवा रंग व आकर्षक चमक
-- उत्तम तिखटपणा
-- पीक कालावधी: 70-80 दिवसांत कापणीस योग्य
-`,
-  wiki: 'https://en.wikipedia.org/wiki/chilli',
-  image: chilli,
-}
-,
-  {
-    id: 3,
-    name: 'Bahubali',
-    price: '₹2.90',
-    
-    category: 'Watermelon',
-    description: `बाहुबली ही वॉटरमेलनची एक उच्च उत्पादनक्षम वाण आहे, जी मोठ्या आकाराच्या, गडद हिरव्या रंगाच्या गाठींसाठी प्रसिद्ध आहे. गोडसर चव, आकर्षक रंग आणि वजनदार फळांमुळे ही वाण बाजारात मोठ्या प्रमाणात पसंत केली जाते.
-
-वैशिष्ट्ये:
-
-जलद वाढ व लवकर कापणी – 70-75 दिवसांत तयार
-
-फळांचे वजन – सरासरी 5 ते 8 किलो पर्यंत
-
-आकर्षक रंग – गडद हिरवी साल व गडद लाल गर
-
-चव – गोडसर व रसदार
-
-बाजारात टिकाव – वाहतुकीसाठी योग्य, मजबूत साल
-
-उत्पादन – प्रति एकर भरपूर उत्पादन क्षमता
-
-लागवडीचा योग्य कालावधी:
-जानेवारी ते मार्च आणि जून ते जुलै हे महिने लागवडीसाठी सर्वोत्तम आहेत.`,
-    wiki: 'https://en.wikipedia.org/wiki/Watermelon',
-    image: watermeloan,
-  },
-  {
-    id: 4,
-    name: 'Aryaman',
-    price: '₹1.50',
-   
-    category: 'Tomato',
-    description: `आर्यमान हा टोमॅटोचा एक उत्तम संकरित (हायब्रीड) प्रकार आहे जो उच्च उत्पादन, आकर्षक रंग, आणि चांगली टिकवण क्षमता यासाठी ओळखला जातो. बाजारात विक्रीसाठी तसेच वाहतुकीसाठीही ही वाण खूप फायदेशीर आहे.
-
-वैशिष्ट्ये:
-
-जलद वाढ – फळधारणा लवकर सुरू होते
-
-फळांचे वजन – सरासरी 90 ते 120 ग्रॅम
-
-आकर्षक रंग – गडद लालसर, गुळगुळीत त्वचा
-
-आकार – गोलसर आणि थोडा चपट्या प्रकारचा
-
-उत्पादन क्षमता – खूपच चांगले उत्पादन
-
-टिकवण क्षमता – काढणीनंतर दीर्घकाळ टिकतो
-
-रोग प्रतिकार – बुरशीजन्य व विषाणूजन्य रोगांना चांगला प्रतिकार
-
-लागवडीचा योग्य कालावधी:
-जुलै ते नोव्हेंबर व डिसेंबर ते फेब्रुवारी या कालावधीत लागवड करणे अधिक फायदेशीर.`,
-    wiki: 'https://en.wikipedia.org/wiki/Tomato',
-    image:aryman,
-  
-  },
-];
+const products = plantsData.filter((p) =>
+  ["Cabbage", "Chilli", "Watermelon", "Tomato"].includes(p.category)
+);
 
 const ProductCard = () => {
   const [selectedPlant, setSelectedPlant] = useState(null);
@@ -149,16 +48,13 @@ const ProductCard = () => {
       >
         {/* ✅ Image click navigates to login if unauthenticated */}
         <img
-          src={product.image}
+          src={product.images[0]}
           alt={product.name}
+          loading="lazy"
+          decoding="async"
           onClick={() => {
-            const path = `/vegetable/${product.category}`;
-            if (!isAuthenticated) {
-              localStorage.setItem("redirectAfterLogin", path);
-              navigate("/login");
-            } else {
-              navigate(path);
-            }
+            const path = `/vegetable/${product.category.toLowerCase().replace(/\s+/g, '-')}`;
+            navigate(path);
           }}
           className="object-cover w-full h-40 mb-2 rounded cursor-pointer"
         />
@@ -191,36 +87,56 @@ const ProductCard = () => {
 
   {/* ✅ Modal */}
   {selectedPlant && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center w-screen h-screen overflow-auto bg-white">
-      <div className="relative flex flex-col items-center justify-start w-screen h-screen p-6 pt-16">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 flex flex-col items-center border border-green-100 max-h-[90vh] overflow-y-auto">
         <button
-          className="absolute text-4xl font-bold text-gray-700 transition-colors top-4 right-6 hover:text-red-600"
+          className="absolute text-2xl font-bold text-gray-400 hover:text-red-600 transition-colors top-4 right-4"
           onClick={() => setSelectedPlant(null)}
         >
           ×
         </button>
 
         <img
-          src={selectedPlant.image}
+          src={selectedPlant.images[0]}
           alt={selectedPlant.name}
-          className="object-cover w-11/12 h-64 max-w-xl mb-6 rounded"
+          className="object-cover w-full h-56 rounded-xl mb-4 shadow-sm"
         />
 
-        <h2 className="mb-2 text-3xl font-bold text-green-700">{selectedPlant.name}</h2>
-        <p className="px-4 mb-2 text-base text-center text-gray-700">{selectedPlant.description}</p>
-        <p className="mb-1 text-xl font-semibold text-green-600">Price: ₹{selectedPlant.price}</p>
-        <p className="mb-4 text-sm text-gray-600">
-          Category: <span className="font-medium">{selectedPlant.category}</span>
+        <h2 className="text-2xl font-extrabold text-green-800 mb-2">{selectedPlant.name}</h2>
+        <p className="text-sm text-gray-600 mb-4 whitespace-pre-line text-justify leading-relaxed px-1">
+          {selectedPlant.description}
         </p>
+        <div className="flex justify-between items-center w-full border-t border-gray-100 pt-4 mt-auto">
+          <div>
+            <span className="text-xs text-gray-500 block">Category</span>
+            <span className="font-semibold text-green-700">{selectedPlant.category}</span>
+          </div>
+          <div>
+            <span className="text-xs text-gray-500 block text-right">Price</span>
+            <span className="text-lg font-bold text-green-700">{selectedPlant.price}</span>
+          </div>
+        </div>
 
-        <a
-          href={selectedPlant.wiki}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-blue-600 underline hover:text-blue-800"
-        >
-          View on Wikipedia
-        </a>
+        <div className="flex gap-4 w-full mt-6">
+          <button
+            onClick={() => {
+              const path = `/vegetable/${selectedPlant.category.toLowerCase().replace(/\s+/g, '-')}`;
+              navigate(path);
+              setSelectedPlant(null);
+            }}
+            className="flex-1 py-2.5 bg-green-600 hover:bg-yellow-600 text-white font-bold rounded-lg transition duration-200 text-center"
+          >
+            Order / View Details
+          </button>
+          <a
+            href={selectedPlant.wiki}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 py-2.5 border border-green-200 text-green-700 font-semibold rounded-lg hover:bg-green-50 transition duration-200 text-center text-sm flex items-center justify-center"
+          >
+            View on Wikipedia
+          </a>
+        </div>
       </div>
     </div>
   )}

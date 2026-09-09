@@ -40,16 +40,12 @@ const AddMobile = ({ setAuthenticated, setUserRole }) => {
 
       // Store new token if returned (optional)
       const role = response.data.role;
-      setUserRole(role);
+      setUserRole(role || "CUSTOMER");
       setAuthenticated(true);
-      if (role === "ADMIN") {
-        navigate("/admin");
-      } else if (role === "CUSTOMER") {
-        const redirectPath =
-          localStorage.getItem("redirectAfterLogin") || "/products";
-        localStorage.removeItem("redirectAfterLogin");
-        navigate(redirectPath, { replace: true });
-      }
+      const redirectPath =
+        localStorage.getItem("redirectAfterLogin") || "/products";
+      localStorage.removeItem("redirectAfterLogin");
+      navigate(redirectPath, { replace: true });
       
     } catch (error) {
       console.error("Error submitting mobile number:", error);

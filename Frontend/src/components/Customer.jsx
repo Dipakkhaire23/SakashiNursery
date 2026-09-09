@@ -46,6 +46,8 @@ const Customer = () => {
             <img
               src={customer.logo}
               alt={customer.name}
+              loading="lazy"
+              decoding="async"
               className="object-cover w-full h-40 mb-4 rounded"
             />
             <h3 className="text-xl font-semibold text-gray-800">{customer.name}</h3>

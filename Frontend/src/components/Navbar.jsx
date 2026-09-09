@@ -1,68 +1,47 @@
 import { useState, useEffect } from "react";
-import { ShoppingCart, Menu, X, User } from "lucide-react";
+import { 
+  ShoppingCart, 
+  Menu, 
+  X, 
+  User, 
+  ChevronDown, 
+  Home as HomeIcon, 
+  Sprout, 
+  Building2, 
+  Info, 
+  Package 
+} from "lucide-react";
 import { Link, useNavigate, NavLink } from "react-router-dom";
-import Logo from "../images/logo.png";
-
+import LanguageTranslator from "./LanguageTranslator";
 
 // eslint-disable-next-line react/prop-types
 const Navbar = ({ cartItemCoun, authenticated }) => {
   const navigate = useNavigate();
-  
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  let [cartItemCount, setCartItemCount] = useState(0);
-  // eslint-disable-next-line no-unused-vars
-  const [showPages, setShowPages] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
   const [showShopDropdown, setShowShopDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // const [mobileShowPages, setMobileShowPages] = useState(false);
   const [mobileShowShop, setMobileShowShop] = useState(false);
   const token = localStorage.getItem("token");
-
-  // useEffect(() => {
-  //   // if (token) {
-  //   //   axios
-  //   //     .get(import.meta.env.VITE_BACKEND_URL + "/api/users/UserRole", {
-  //   //       withCredentials: true,
-  //   //     })
-  //   //     .then(() => setIsAuthenticated(true))
-  //   //     .catch(() => setIsAuthenticated(false));
-  //   // }
-  // }, []);
 
   useEffect(() => {
     setIsAuthenticated(authenticated);
     if (token) {
       setIsAuthenticated(true);
     }
-  }, [authenticated, token]); // runs ONLY when `authenticated` prop changes
+  }, [authenticated, token]);
 
-  // 🔄 Fetch cart count from backend when authenticated
   useEffect(() => {
-    const fetchCartItemCount = async () => {
-      if (!isAuthenticated) return;
-      try {
-        const res = await fetch(
-          import.meta.env.VITE_BACKEND_URL + "/api/carts/CartItemCount",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
-        const countData = await res.json();
-        setCartItemCount(countData || 0); // assuming backend returns { count: X }
-      } catch (err) {
-        console.error("Cart count error:", err);
-        setCartItemCount(0);
-      }
+    const syncCartItemCount = () => {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCartItemCount(cart.length);
     };
 
-    fetchCartItemCount();
-  }, [isAuthenticated]);
+    syncCartItemCount();
+    window.addEventListener("storage", syncCartItemCount);
+    return () => window.removeEventListener("storage", syncCartItemCount);
+  }, []);
 
-  // 🆕 Update from props when passed (on add to cart)
   useEffect(() => {
     if (cartItemCoun !== undefined) {
       setCartItemCount(cartItemCoun);
@@ -90,104 +69,79 @@ const Navbar = ({ cartItemCoun, authenticated }) => {
 
   const handleMobileLinkClick = () => {
     setMobileMenuOpen(false);
-    // setMobileShowPages(false);
     setMobileShowShop(false);
   };
 
   return (
-    <nav className="sticky top-0 z-50 px-4 py-4 text-white bg-green-800 shadow-md md:px-6">
-      <div className="flex items-center justify-between w-full">
-        {/* Logo */}
-        <div className="mr-7">
-          <img src={Logo} alt="Logo" className="w-30 h-14" />
-        </div>
+    <>
+      <nav className="sticky top-0 z-50 px-3 py-2.5 sm:px-6 sm:py-3.5 text-white glass-header shadow-lg">
+        <div className="flex items-center justify-between max-w-7xl mx-auto w-full">
+          
+          {/* Logo */}
+          <Link to="/home" className="flex items-center shrink-0">
+            <svg 
+              className="w-48 h-10 sm:w-64 sm:h-12 md:w-72 md:h-14 transition-transform hover:scale-105" 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 320 80"
+            >
+              <g transform="translate(10, 10)">
+                <path d="M 10 60 C 10 20, 35 5, 60 5 C 60 30, 35 60, 10 60 Z" fill="#2E7D32"/>
+                <path d="M 60 5 L 35 30 L 50 55" stroke="#81C784" strokeWidth="2.5" fill="none" />
+                <path d="M 35 30 L 15 45" stroke="#81C784" strokeWidth="2.5" fill="none" />
+                <circle cx="35" cy="30" r="3" fill="#81C784" />
+                <circle cx="60" cy="5" r="3" fill="#81C784" />
+                <circle cx="50" cy="55" r="3" fill="#81C784" />
+              </g>
+              <text x="85" y="35" fontFamily="system-ui, sans-serif" fontSize="34" fontWeight="bold" fill="#FACC15">
+                Sakshi HiTech
+              </text>
+              <text x="85" y="60" fontFamily="system-ui, sans-serif" fontSize="25" fontWeight="600" letterSpacing="3" fill="#FFFFFF">
+                NURSERY
+              </text>
+            </svg>
+          </Link>
 
-        <div className="flex items-center space-x-6">
-          {/* Desktop Navigation */}
-          <div className="items-center justify-center flex-1 hidden gap-5 text-base font-medium md:flex">
-            {isAuthenticated ? (
-              <>
-                <NavLink
-                  to="/products"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-yellow-300 font-semibold"
-                      : "hover:text-yellow-300"
-                  }
-                >
-                  Plants
-                </NavLink>
-                {/* Add more authenticated links here */}
-              </>
-            ) : (
-              <>
-                <NavLink
-                  to="/home"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-yellow-300 font-semibold"
-                      : "hover:text-yellow-300"
-                  }
-                >
-                  Home
-                </NavLink>
+          {/* Desktop Navigation Links (Shifted Right) */}
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm xl:text-base font-semibold ml-auto mr-4">
+            <NavLink
+              to="/home"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-yellow-300 border-b-2 border-yellow-300 pb-0.5"
+                  : "hover:text-yellow-300 transition-colors"
+              }
+            >
+              Home
+            </NavLink>
 
-                <NavLink
-                  to="/infrastructure"
-                  onClick={() => setShowPages(false)}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-green-600 font-semibold"
-                      : "block px-4 py-2 hover:text-green-600"
-                  }
-                >
-                  Infrastructure
-                </NavLink>
-
-                <NavLink
-                  to="/about-us"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-yellow-300 font-semibold"
-                      : "hover:text-yellow-300"
-                  }
-                >
-                  About Us
-                </NavLink>
-              </>
-            )}
-
-            <div className="relative">
+            {/* Available Plants Dropdown */}
+            <div 
+              className="relative"
+              onMouseEnter={() => setShowShopDropdown(true)}
+              onMouseLeave={() => setShowShopDropdown(false)}
+            >
               <button
                 onClick={() => setShowShopDropdown(!showShopDropdown)}
-                className="flex items-center justify-between w-full font-semibold text-left hover:text-yellow-200 blink"
+                className="flex items-center gap-1 hover:text-yellow-300 transition-colors py-1 cursor-pointer"
               >
-                Book Now ▾
+                <span>Available Plants</span>
+                <ChevronDown size={16} className={`transition-transform duration-200 ${showShopDropdown ? "rotate-180 text-yellow-300" : ""}`} />
               </button>
+
               {showShopDropdown && (
-                <div
-                  className="absolute z-10 w-64 mt-2 text-black transform -translate-x-1/2 bg-white border shadow-2xl left-1/2 top-full rounded-xl"
-                  onMouseLeave={() => setShowShopDropdown(false)} // 🔑 This line closes dropdown when mouse leaves
-                >
-                  <div className="grid grid-cols-2 gap-3 px-4 py-3">
+                <div className="absolute left-0 top-full pt-2 w-72 z-50">
+                  <div className="bg-green-950/95 backdrop-blur-md border border-green-700/60 rounded-2xl shadow-2xl p-3 grid grid-cols-2 gap-1.5 text-xs font-medium">
                     {vegetableList.map((veg, i) => (
                       <button
                         key={i}
                         onClick={() => {
-                          const vegPath = `/vegetable/${veg
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")}`;
-                          if (!isAuthenticated) {
-                            localStorage.setItem("redirectAfterLogin", vegPath);
-                            navigate("/login");
-                          } else {
-                            navigate(vegPath);
-                          }
+                          const vegPath = `/vegetable/${veg.toLowerCase().replace(/\s+/g, "-")}`;
+                          navigate(vegPath);
                           setShowShopDropdown(false);
                         }}
-                        className="font-semibold text-left hover:text-green-700"
+                        className="px-2.5 py-1.5 rounded-lg text-left text-green-100 hover:text-yellow-300 hover:bg-green-800/60 transition-all truncate"
                       >
-                        {veg}
+                        🌱 {veg}
                       </button>
                     ))}
                   </div>
@@ -195,368 +149,200 @@ const Navbar = ({ cartItemCoun, authenticated }) => {
               )}
             </div>
 
-            {/* <Link to="/team" className="hover:text-yellow-300">
-            Team
-          </Link>
-          <Link to="/about-us" className="hover:text-yellow-300">
-            About Us
-          </Link>
-          <Link to="/contact-us" className="hover:text-yellow-300">
-            Contact Us
-          </Link>
-          <Link to="/phases" className="hover:text-yellow-300">
-            Phases
-          </Link> */}
-            <div className="flex items-center justify-start space-x-6">
-              {/* Show My Orders only when authenticated */}
-              {isAuthenticated && (
-                <>
-                  <NavLink
-                    to="/my-orders"
-                    className={({ isActive }) =>
-                      isActive
-                        ? "text-yellow-300 font-semibold"
-                        : "hover:text-yellow-300"
-                    }
-                  >
-                    My Orders
-                  </NavLink>
+            <NavLink
+              to="/products"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-yellow-300 border-b-2 border-yellow-300 pb-0.5"
+                  : "hover:text-yellow-300 transition-colors"
+              }
+            >
+              Plants
+            </NavLink>
 
-                  {/* <NavLink
-  to="/products"
-  className={({ isActive }) =>
-    isActive ? 'text-yellow-300 font-semibold' : 'hover:text-yellow-300'
-  }
->
-  Products
-</NavLink> */}
-                </>
-              )}
+            <NavLink
+              to="/infrastructure"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-yellow-300 border-b-2 border-yellow-300 pb-0.5"
+                  : "hover:text-yellow-300 transition-colors"
+              }
+            >
+              Infrastructure
+            </NavLink>
 
-              {/* Pages Dropdown
-  <div className="relative">
-    <button
-      onClick={() => setShowPages(!showPages)}
-      className="hover:text-yellow-300"
-    >
-      Pages ▾
-    </button>
+            <NavLink
+              to="/about-us"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-yellow-300 border-b-2 border-yellow-300 pb-0.5"
+                  : "hover:text-yellow-300 transition-colors"
+              }
+            >
+              About Us
+            </NavLink>
 
-    {showPages && (
-      <div
-        className="absolute z-10 w-56 mt-2 text-black transform -translate-x-1/2 bg-white shadow-2xl left-1/2 top-full rounded-xl"
-        onMouseLeave={() => setShowPages(false)}
-      >
-       
-        <Link
-          to="/phases"
-          onClick={() => setShowPages(false)}
-          className="block px-4 py-2 hover:text-green-600"
-        >
-          Phases
-        </Link>
-        <Link
-          to="/about-us"
-          onClick={() => setShowPages(false)}
-          className="block px-4 py-2 hover:text-green-600"
-        >
-          About Us
-        </Link>
-        <Link
-          to="/contact-us"
-          onClick={() => setShowPages(false)}
-          className="block px-4 py-2 hover:text-green-600"
-        >
-          Contact Us
-        </Link>
-        <Link
-          to="/team"
-          onClick={() => setShowPages(false)}
-          className="block px-4 py-2 hover:text-green-600"
-        >
-          Team
-        </Link>
-      </div>
-    )}
-  </div> */}
-            </div>
+            
           </div>
 
-          {/* Right Side (Mobile and Desktop) */}
-          <div className="flex items-center gap-3 ml-auto">
-            {/* Desktop Cart & Profile */}
-            <div className="items-center hidden gap-4 md:flex">
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    to="/cart"
-                    className="relative p-2 transition rounded-full group hover:bg-yellow-200"
-                    title="Cart"
-                  >
-                    <ShoppingCart
-                      size={26}
-                      className="text-yellow-300 group-hover:text-green-700"
-                    />
-                    {cartItemCount > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-                        {cartItemCount}
-                      </span>
-                    )}
-                  </Link>
-
-                  <Link
-                    to="/profile"
-                    className="p-2 transition rounded-full group hover:bg-yellow-200"
-                    title="Profile"
-                  >
-                    <User
-                      size={28}
-                      className="text-white group-hover:text-green-700"
-                    />
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="relative inline-block px-5 py-2 overflow-hidden font-semibold transition border-2 border-yellow-300 rounded-lg text-white-700 group hover:text-white"
-                  >
-                    <span className="absolute top-0 left-0 z-0 w-full h-0 transition-all duration-300 ease-in-out bg-yellow-300 group-hover:h-full"></span>
-                    <span className="relative z-10">Login</span>
-                  </Link>
-                  {/* <Link
-                to="/register"
-                className="relative inline-block px-5 py-2 overflow-hidden font-semibold transition border-2 border-yellow-300 rounded-lg text-white-700 group hover:text-white"
-              >
-                <span className="absolute top-0 left-0 z-0 w-full h-0 transition-all duration-300 ease-in-out bg-yellow-300 group-hover:h-full"></span>
-                <span className="relative z-10">Register</span>
-              </Link> */}
-                </>
-              )}
+          {/* Right Action Items */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            
+            {/* Language Translator (Desktop Only) */}
+            <div className="hidden lg:block">
+              <LanguageTranslator />
             </div>
 
-            {/* Mobile Auth Buttons or Cart/Profile */}
-            <div className="flex items-center gap-3 md:hidden">
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    to="/cart"
-                    title="Cart"
-                    className="relative text-yellow-300"
-                  >
-                    <ShoppingCart size={24} />
-                    {cartItemCount > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
-                        {cartItemCount}
-                      </span>
-                    )}
-                  </Link>
-                  <Link to="/profile" title="Profile">
-                    <User size={24} className="text-white" />
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="px-3 py-1 font-medium text-yellow-300 border border-yellow-300 rounded"
-                  >
-                    Login
-                  </Link>
-                  {/* <Link
-                to="/register"
-                className="px-3 py-1 font-medium text-yellow-300 border border-yellow-300 rounded"
-              >
-                Register
-              </Link> */}
-                </>
-              )}
-            </div>
+         
 
-            {/* Hamburger Menu (Mobile Only) */}
-            <div className="md:hidden">
-              <button onClick={() => setMobileMenuOpen(true)}>
-                <Menu size={28} className="text-white" />
-              </button>
-            </div>
-          </div>
-          {/* Mobile Sidebar */}
-          <div
-            className={`fixed top-0 left-0 h-full w-64 bg-green-800 text-white transform transition-transform duration-300 z-30 ${
-              mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
-          >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-green-600">
-              <div className="text-xl font-bold">Menu</div>
-              <button onClick={() => setMobileMenuOpen(false)}>
-                <X size={28} />
-              </button>
-            </div>
+           
 
-            <nav className="flex flex-col gap-4 px-6 mt-4 text-lg">
-              {isAuthenticated ? (
-                <div className="flex flex-col space-y-3">
-                  {/* Mobile Shop */}
-                  <div>
-                    <button
-                      onClick={() => setMobileShowShop(!mobileShowShop)}
-                      className="flex items-center justify-between w-full font-semibold text-left hover:text-yellow-200 blink"
-                    >
-                      Book Now ▾
-                    </button>
-
-                    {mobileShowShop && (
-                      <div className="pr-2 mt-4 ml-4 overflow-y-auto max-h-48">
-                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                          {vegetableList.map((veg, i) => (
-                            <button
-                              key={i}
-                              onClick={() => {
-                                const vegPath = `/vegetable/${veg
-                                  .toLowerCase()
-                                  .replace(/\s+/g, "-")}`;
-                                if (!isAuthenticated) {
-                                  localStorage.setItem(
-                                    "redirectAfterLogin",
-                                    vegPath
-                                  );
-                                  navigate("/login");
-                                } else {
-                                  navigate(vegPath);
-                                }
-                                setShowShopDropdown(false);
-                              }}
-                              className="p-1 text-sm font-semibold text-center text-green-900 transition-transform duration-300 transform bg-green-100 shadow-md hover:bg-green-200 rounded-xl hover:shadow-xl hover:scale-105 sm:text-base"
-                            >
-                              {veg}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  {/* product */}
-                  <NavLink
-                    to="/products"
-                    className={({ isActive }) =>
-                      isActive
-                        ? "text-yellow-300 font-semibold"
-                        : "hover:text-yellow-300"
-                    }
-                  >
-                    Plants
-                  </NavLink>
-
-                  <Link
-                    to="/my-orders"
-                    onClick={handleMobileLinkClick}
-                    className="font-semibold hover:text-yellow-200"
-                  >
-                    My Orders
-                  </Link>
-                </div>
-              ) : (
-                <>
-                  <Link
-                    to="/home"
-                    className="hover:text-yellow-200"
-                    onClick={handleMobileLinkClick}
-                  >
-                    Home
-                  </Link>
-                  {/* Mobile Shop */}
-                  <div>
-                    <button
-                      onClick={() => setMobileShowShop(!mobileShowShop)}
-                      className="flex items-center justify-between w-full font-semibold text-left hover:text-yellow-200 blink"
-                    >
-                      Book Now ▾
-                    </button>
-
-                    {mobileShowShop && (
-                      <div className="pr-2 mt-4 ml-4 overflow-y-auto max-h-48">
-                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                          {vegetableList.map((veg, i) => (
-                            <button
-                              key={i}
-                              onClick={() => {
-                                const vegPath = `/vegetable/${veg
-                                  .toLowerCase()
-                                  .replace(/\s+/g, "-")}`;
-                                if (!isAuthenticated) {
-                                  localStorage.setItem(
-                                    "redirectAfterLogin",
-                                    vegPath
-                                  );
-                                  navigate("/login");
-                                } else {
-                                  navigate(vegPath);
-                                }
-                                setShowShopDropdown(false);
-                              }}
-                              className="p-1 text-sm font-semibold text-center text-green-900 transition-transform duration-300 transform bg-green-100 shadow-md hover:bg-green-200 rounded-xl hover:shadow-xl hover:scale-105 sm:text-base"
-                            >
-                              {veg}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <Link
-                    to="/infrastructure"
-                    className="font-semibold hover:text-yellow-200"
-                    onClick={handleMobileLinkClick}
-                  >
-                    Infrastructure
-                  </Link>
-
-                  {/* <Link
-            to="/team"
-            className="font-semibold hover:text-yellow-200"
-            onClick={handleMobileLinkClick}
-          >
-            Team
-          </Link> */}
-
-                  <Link
-                    to="/about-us"
-                    className="font-semibold hover:text-yellow-200"
-                    onClick={handleMobileLinkClick}
-                  >
-                    About Us
-                  </Link>
-                  {/* <Link
-            to="/contact-us"
-            className="font-semibold hover:text-yellow-200"
-            onClick={handleMobileLinkClick}
-          >
-            Contact us
-          </Link> */}
-
-                  {/* <Link
-            to="/phases"
-            className="font-semibold hover:text-yellow-200"
-            onClick={handleMobileLinkClick}
-          >
-            Phases
-          </Link> */}
-                </>
-              )}
-            </nav>
+            {/* Mobile Hamburger Toggle Button */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden p-1.5 rounded-xl bg-green-900/80 hover:bg-green-800 text-white border border-green-700/50 transition-all"
+              aria-label="Open Mobile Menu"
+            >
+              <Menu size={24} />
+            </button>
           </div>
 
-          {/* Backdrop */}
-          {mobileMenuOpen && (
-            <div
-              className="fixed inset-0 z-10 bg-black opacity-50"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-          )}
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile Drawer (Sidebar) */}
+      <aside
+        className={`fixed top-0 left-0 h-full w-72 sm:w-80 bg-gradient-to-b from-green-950 via-green-900 to-green-950 text-white transform transition-transform duration-300 ease-in-out z-50 shadow-2xl flex flex-col ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-green-800/80 bg-green-950/60">
+          <div className="flex items-center gap-2">
+            <Sprout size={22} className="text-yellow-400" />
+            <span className="font-bold text-lg text-white">Navigation Menu</span>
+          </div>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="p-1.5 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-all"
+            aria-label="Close Mobile Menu"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* Drawer Links */}
+        <nav className="flex-1 px-4 py-5 overflow-y-auto space-y-2 text-base font-medium">
+          
+          {/* Mobile Language Translator Inside Drawer */}
+          <div className="px-3 py-2.5 mb-3 rounded-xl bg-green-950/80 border border-yellow-400/30 flex items-center justify-between shadow-inner">
+            
+           
+          </div>
+          <NavLink
+            to="/home"
+            onClick={handleMobileLinkClick}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                isActive
+                  ? "bg-yellow-400 text-green-950 font-bold shadow-md"
+                  : "text-gray-100 hover:bg-white/10"
+              }`
+            }
+          >
+            <HomeIcon size={20} />
+            <span>Home</span>
+          </NavLink>
+
+          {/* Available Plants Accordion */}
+          <div className="rounded-xl overflow-hidden border border-green-800/50 bg-green-900/30">
+            <button
+              onClick={() => setMobileShowShop(!mobileShowShop)}
+              className="flex items-center justify-between w-full px-4 py-3 text-left text-gray-100 hover:bg-white/5 transition-all font-medium"
+            >
+              <div className="flex items-center gap-3">
+                <Sprout size={20} className="text-yellow-400" />
+                <span>Available Plants</span>
+              </div>
+              <ChevronDown size={18} className={`transition-transform duration-200 ${mobileShowShop ? "rotate-180 text-yellow-400" : ""}`} />
+            </button>
+
+            {mobileShowShop && (
+              <div className="p-3 bg-green-950/70 border-t border-green-800/50 grid grid-cols-2 gap-1.5 text-xs font-semibold">
+                {vegetableList.map((veg, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      const vegPath = `/vegetable/${veg.toLowerCase().replace(/\s+/g, "-")}`;
+                      navigate(vegPath);
+                      handleMobileLinkClick();
+                    }}
+                    className="p-2 rounded-lg text-left text-green-200 hover:text-yellow-300 hover:bg-green-800/60 transition-all truncate"
+                  >
+                    🌱 {veg}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <NavLink
+            to="/products"
+            onClick={handleMobileLinkClick}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                isActive
+                  ? "bg-yellow-400 text-green-950 font-bold shadow-md"
+                  : "text-gray-100 hover:bg-white/10"
+              }`
+            }
+          >
+            <Sprout size={20} />
+            <span>Plants</span>
+          </NavLink>
+
+          <NavLink
+            to="/infrastructure"
+            onClick={handleMobileLinkClick}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                isActive
+                  ? "bg-yellow-400 text-green-950 font-bold shadow-md"
+                  : "text-gray-100 hover:bg-white/10"
+              }`
+            }
+          >
+            <Building2 size={20} />
+            <span>Infrastructure</span>
+          </NavLink>
+
+          <NavLink
+            to="/about-us"
+            onClick={handleMobileLinkClick}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                isActive
+                  ? "bg-yellow-400 text-green-950 font-bold shadow-md"
+                  : "text-gray-100 hover:bg-white/10"
+              }`
+            }
+          >
+            <Info size={20} />
+            <span>About Us</span>
+          </NavLink>
+
+           <LanguageTranslator />
+        </nav>
+      </aside>
+
+      {/* Backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+    </>
   );
 };
 

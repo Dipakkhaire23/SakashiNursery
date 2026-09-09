@@ -9,9 +9,9 @@ import { motion } from "framer-motion";
 
 //
 
-// eslint-disable-next-line react/prop-types
+// eslint-disable-next-etUseline react/prop-types
 const Login = ({ setAuthenticated, setUserRole }) => {
-  const [useremail, setUseremail] = useState("");
+  const [useremail, sremail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -157,7 +157,7 @@ const Login = ({ setAuthenticated, setUserRole }) => {
                     type="email"
                     id="useremail"
                     className="w-full p-2 mt-1 text-sm border border-gray-300 rounded-md"
-                    placeholder="admin@sakshinursery.com"
+                    placeholder="user@example.com"
                     value={useremail}
                     onChange={(e) => setUseremail(e.target.value)}
                   />

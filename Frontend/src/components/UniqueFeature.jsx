@@ -14,21 +14,21 @@ const UniqueFeature = () => {
   const features = [
     {
       icon: <Sparkles className="h-9 w-9 text-green-600" />,
-      title: "Eco-Friendly Practices",
+      title: "Trusted Quality",
       description:
-        "We use sustainable packaging and follow eco-friendly plant sourcing methods to reduce our environmental impact.",
+        "We give people vegetable plants that're good for them and real. Every time someone places an order we make sure to do it with care and make sure the vegetable plants are of quality. We want our customers to be happy, with the vegetable plants they get from us.",
     },
     {
       icon: <Sprout className="h-9 w-9 text-green-600" />,
-      title: "Fertilizer & Pesticide Support",
+      title: "Proper Plant Nutrition",
       description:
-        "We recommend the right fertilizers and pesticides for each plant and provide them directly for healthy growth.",
+        "The proper fertilizers and nutrients are provided to all plants during their nursery stage, so that they have healthy roots and grow well.",
     },
     {
       icon: <User className="h-9 w-9 text-green-600" />,
-      title: "Expert Guidance",
+      title: "Complete Farming Guidance",
       description:
-        "Our plant care tips and dedicated support ensure that even beginners can grow confidently.",
+        "We help farmers select the right type of crops for the season, advise on how much fertilizer to use and proper planting methods and even pay them a visit to their farms after planting.",
     },
     {
       icon: <Leaf className="h-9 w-9 text-green-600" />,

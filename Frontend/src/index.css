@@ -1,5 +1,54 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: 'Outfit', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  
+  /* Customized premium Green palette (deep emerald forest values) */
+  --color-green-50: #f0f7f4;
+  --color-green-100: #ddede5;
+  --color-green-200: #bddbc9;
+  --color-green-300: #92bfa5;
+  --color-green-400: #649e7b;
+  --color-green-500: #1b5e20; /* Primary leaf green */
+  --color-green-600: #2e7d32; /* Rich medium green */
+  --color-green-700: #154f30; /* Forest Green for headings */
+  --color-green-800: #0b3c21; /* Deep Emerald for navbar */
+  --color-green-900: #062814; /* Deep charcoal forest green */
+  
+  /* Curated Gold accent tones */
+  --color-yellow-100: #fef9c3;
+  --color-yellow-200: #fef08a;
+  --color-yellow-300: #f5b93b; /* Warm honey gold */
+  --color-yellow-400: #eab308;
+  --color-yellow-500: #ca8a04;
+}
+
 body, html {
   margin: 0;
   padding: 0;
+  font-family: 'Outfit', sans-serif;
+  background-color: #f0f7f4;
+  color: #062814;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism & utility helper styles */
+.glass-header {
+  background: rgba(11, 60, 33, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(221, 237, 229, 0.1);
+}
+
+.premium-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -10px rgba(11, 60, 33, 0.15);
+}
+
