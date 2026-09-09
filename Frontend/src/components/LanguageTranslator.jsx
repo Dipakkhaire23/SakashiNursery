@@ -14,7 +14,14 @@ const LanguageTranslator = () => {
     // Read current language from cookie if set
     const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/i);
     if (match && match[1]) {
-      setCurrentLang(match[1].toLowerCase());
+      const lang = match[1].toLowerCase();
+      if (lang === "en") {
+        setCurrentLang("en");
+      } else {
+        setCurrentLang(lang);
+      }
+    } else {
+      setCurrentLang("en");
     }
 
     // Function to initialize Google Translate element inside container
@@ -50,26 +57,44 @@ const LanguageTranslator = () => {
   }, []);
 
   const changeLanguage = (langCode) => {
+    const domain = window.location.hostname;
+    const mainDomain = domain.startsWith("www.") ? domain.substring(4) : domain;
+
+    if (langCode === "en") {
+      // Clear googtrans cookies completely across path and domain to restore English
+      const expireStr = "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = `googtrans${expireStr}`;
+      document.cookie = `googtrans${expireStr} domain=${domain};`;
+      document.cookie = `googtrans${expireStr} domain=.${domain};`;
+      if (mainDomain !== domain) {
+        document.cookie = `googtrans${expireStr} domain=${mainDomain};`;
+        document.cookie = `googtrans${expireStr} domain=.${mainDomain};`;
+      }
+
+      setCurrentLang("en");
+      const selectElem = document.querySelector(".goog-te-combo");
+      if (selectElem) {
+        selectElem.value = "";
+        selectElem.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      window.location.reload();
+      return;
+    }
+
     setCurrentLang(langCode);
 
-    // Set Google Translate cookie across path and domain
-    const domain = window.location.hostname;
+    // Set Google Translate cookie for target language
     document.cookie = `googtrans=/en/${langCode}; path=/;`;
     document.cookie = `googtrans=/en/${langCode}; path=/; domain=${domain};`;
 
     const selectElem = document.querySelector(".goog-te-combo");
     if (selectElem) {
       selectElem.value = langCode;
-      
-      // Trigger legacy onchange callback if attached directly by Google script
       if (typeof selectElem.onchange === "function") {
         selectElem.onchange();
       }
-      
-      // Dispatch standard DOM change event
       selectElem.dispatchEvent(new Event("change", { bubbles: true }));
     } else {
-      // Soft fallback if element wasn't in DOM
       window.location.reload();
     }
   };
